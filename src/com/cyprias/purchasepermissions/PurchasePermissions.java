@@ -272,10 +272,20 @@ public class PurchasePermissions extends JavaPlugin {
 						sender.sendMessage(chatPrefix + args[1] + " Info.");
 						sender.sendMessage("  node: " + info.node);
 						sender.sendMessage("  command: " + info.command);
-						sender.sendMessage("  price: " + info.price);
-						sender.sendMessage("  duration: " + database.secondsToString(info.duration * 60));
+						sender.sendMessage("  price: $" + info.price);
 
-						sender.sendMessage("  uses: " + info.uses);
+						if (info.duration > 0){
+							sender.sendMessage("  duration: " + ChatColor.GREEN + database.secondsToString(info.duration * 60));
+						}else{
+							sender.sendMessage("  duration: " + ChatColor.GREEN + "Unlimited");
+						}
+						
+						if (info.uses > 0 ){
+							sender.sendMessage("  uses: " + ChatColor.GREEN + info.uses);
+						}else{
+							sender.sendMessage("  uses: " + ChatColor.GREEN + "Unlimited");
+						}
+						
 
 						// sender.sendMessage("  You have permission: " +
 						// database.permissionInDB(player.getName().toString(),

@@ -117,52 +117,55 @@ class PlayerListener implements Listener {
 	}
 
 	public static void addPermission(String pName, String permissionName) {
-
-		List<String> nodes = Config.getPermissionNode(permissionName);
-		// log.info("Player addPermission 3");
-		if (nodes != null) {
-			// log.info("Player addPermission 4");
-
-			// Player player = plugin.getServer().getPlayer(pName);
-			// log.info("Player addPermission 5");
-			// if (player != null){
-			log.info(PurchasePermissions.chatPrefix + " Adding " + nodes + " to " + pName + ".");
-			PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
-
-			// log.info("Player addPermission 6");
-
-			for (String nodeName : nodes) {
-				attachment.setPermission(nodeName, true);
+		//if (PurchasePermissions.permissions.containsKey(pName)) {
+			List<String> nodes = Config.getPermissionNode(permissionName);
+			// log.info("Player addPermission 3");
+			if (nodes != null) {
+				// log.info("Player addPermission 4");
+	
+				// Player player = plugin.getServer().getPlayer(pName);
+				// log.info("Player addPermission 5");
+				// if (player != null){
+				log.info(PurchasePermissions.chatPrefix + " Adding " + nodes + " to " + pName + ".");
+				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
+	
+				// log.info("Player addPermission 6");
+	
+				for (String nodeName : nodes) {
+					attachment.setPermission(nodeName, true);
+				}
+	
+				// log.info("Player addPermission 7");
+				// }
 			}
-
-			// log.info("Player addPermission 7");
-			// }
-		}
-
+		//}
 	}
 
 	public static void removePermission(String pName, String permissionName) {
-
-		List<String> nodes = Config.getPermissionNode(permissionName);
-		// log.info("Player addPermission 3");
-		if (nodes != null) {
-			// log.info("Player addPermission 4");
-
-			// Player player = plugin.getServer().getPlayer(pName);
-			// log.info("Player addPermission 5");
-			// if (player != null){
-			log.info(PurchasePermissions.chatPrefix + " Removing " + nodes + " to " + pName + ".");
-			PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
-			// log.info("Player addPermission 6");
-
-			for (String nodeName : nodes) {
-				// attachment.setPermission(nodeName, true);
-				attachment.unsetPermission(nodeName);
+		//if (PurchasePermissions.permissions.containsKey(pName)) {
+			List<String> nodes = Config.getPermissionNode(permissionName);
+			// log.info("Player addPermission 3");
+			if (nodes != null) {
+				// log.info("Player addPermission 4");
+	
+				// Player player = plugin.getServer().getPlayer(pName);
+				// log.info("Player addPermission 5");
+				// if (player != null){
+				
+				
+				
+				log.info(PurchasePermissions.chatPrefix + " Removing " + nodes + " to " + pName + ".");
+				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
+				// log.info("Player addPermission 6");
+	
+				for (String nodeName : nodes) {
+					// attachment.setPermission(nodeName, true);
+					attachment.unsetPermission(nodeName);
+				}
+	
+				// log.info("Player addPermission 7");
+				// }
 			}
-
-			// log.info("Player addPermission 7");
-			// }
-		}
-
+		//}
 	}
 }

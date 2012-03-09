@@ -65,7 +65,9 @@ public class database {
 		
 		//log.info("retrieveActivePermissions: 2");
 		while(result.next()){ 
-			PlayerListener.addPermission(result.getString(col_player), result.getString(col_permission));
+			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
+				PlayerListener.addPermission(result.getString(col_player), result.getString(col_permission));
+			}
 		}
 
 		statement.close();
@@ -84,7 +86,9 @@ public class database {
 		
 		//log.info("retrieveActivePermissions: 2");
 		while(result.next()){ 
-			PlayerListener.removePermission(result.getString(col_player), result.getString(col_permission));
+			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
+				PlayerListener.removePermission(result.getString(col_player), result.getString(col_permission));
+			}
 		}
 
 		statement.close();
@@ -178,7 +182,9 @@ public class database {
 				player.sendMessage(pMsg);
 				
 			}
-			
+			if (i == 0){
+				player.sendMessage(PurchasePermissions.chatPrefix + "You have no purchased permisions.");
+			}
 			
 			result.close();
 			statement.close();
