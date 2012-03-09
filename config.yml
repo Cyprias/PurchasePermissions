@@ -1,0 +1,9 @@
+permissions:
+mysql:
+    table: pp_players
+    port: 3306
+    username: root
+    hostname: localhost
+    password: ''
+    database: minecraft
+notifyPurchase: group.advisor

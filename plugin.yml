@@ -1,0 +1,8 @@
+name: PurchasePermissions
+main: com.cyprias.purchasepermissions.PurchasePermissions
+version: 0.0.4
+
+commands:
+   pp:
+      description: Test
+      usage: /<command> permissionName
