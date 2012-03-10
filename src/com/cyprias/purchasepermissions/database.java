@@ -24,34 +24,6 @@ public class database {
 	 
 	static Logger log = Logger.getLogger("Minecraft");
 
-	public static void stuff(String[] args) throws Exception {
-
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
-		PreparedStatement statement = con.prepareStatement("select * from " + Config.DbTable);
-		ResultSet result = statement.executeQuery();
-
-		/*
-		 * while(result.next()){ //result.getInt(1);
-		 * 
-		 * log.info(AdminHelper.chatPrefix + "---------------------------");
-		 * log.info(AdminHelper.chatPrefix + "db_id: " +
-		 * result.getString(db_id)); log.info(AdminHelper.chatPrefix +
-		 * "db_user: " + result.getString(db_user));
-		 * log.info(AdminHelper.chatPrefix + "db_duration: " +
-		 * result.getString(db_duration)); log.info(AdminHelper.chatPrefix +
-		 * "db_reason: " + result.getString(db_reason));
-		 * log.info(AdminHelper.chatPrefix + "db_admin: " +
-		 * result.getString(db_admin)); }
-		 */
-
-		result.close();
-		statement.close();
-		con.close();
-	}
-
-
-	
 	
 	public static void retrieveActivePermissions(String playerName) throws SQLException{
 
@@ -130,7 +102,7 @@ public class database {
 		long remainder = totalSeconds % 3600,
 		minutes = remainder / 60,
 		seconds = remainder % 60;
-		return hours + "h " + minutes + "m " + seconds + "s";
+		return hours + "h" + minutes + "m" + seconds + "s";
 	}
 	
 	public static void showActivePermissions(Player player){

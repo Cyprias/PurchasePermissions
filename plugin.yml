@@ -1,8 +1,25 @@
 name: PurchasePermissions
 main: com.cyprias.purchasepermissions.PurchasePermissions
-version: 0.0.5
+version: 0.0.7
 
 commands:
-   pp:
+    pp:
       description: Test
       usage: /<command> permissionName
+permissions:
+    purchasepermissions.*:
+        description: Gives access to all commands
+        children:
+            purchasepermissions.create: true
+            purchasepermissions.modify: true
+            purchasepermissions.remove: true
+    purchasepermissions.create:
+        description: Allows you to create a permission.
+        default: op
+    purchasepermissions.modify:
+        description: Allows you to modify a permission.
+        default: op
+    purchasepermissions.remove:
+        description: Allows you to remove a permission.
+        default: op
+        

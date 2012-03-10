@@ -9,11 +9,16 @@ import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cyprias.purchasepermissions.PurchasePermissions;
 
-public class Config {
+public class Config extends JavaPlugin {
+	private PurchasePermissions plugin;
 
+
+	
 	private static final boolean String = false;
 	// public static String adminGroupPermission;
 	// public static String leadershipGroupPermission;
@@ -30,7 +35,8 @@ public class Config {
 	public static String notifyPurchase;
 	
 	public Config(PurchasePermissions plugin) {
-
+		this.plugin = plugin;
+		
 		config = plugin.getConfig().getRoot();
 		config.options().copyDefaults(true);
 		// config.set("version", plugin.version);
@@ -66,6 +72,48 @@ public class Config {
 
 	}
 
+	public boolean permissionExists(String pName){
+		return (config.getConfigurationSection("permissions." + pName) != null);
+	}
+	
+	public boolean createPermission(Player sender, String permissionName){
+		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission name is already used.");
+			return false;
+		}
+		config.getConfigurationSection("permissions").createSection(permissionName);
+		plugin.saveConfig();
+		return true;
+	}
+	
+
+	
+	public boolean modifyPermissionSetting(Player sender, String oName, String oSetting, String oValue){
+		if (config.getConfigurationSection("permissions." + oName) == null) {
+			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission does not exist.");
+			return false;
+		}
+
+		ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(oName.toLowerCase());
+		
+		groupSection.set(oSetting.toLowerCase(), oValue);
+
+		plugin.saveConfig();
+		return true;
+	}
+	
+	public boolean removePermission(Player sender, String permName){
+		if (config.getConfigurationSection("permissions." + permName) == null) {
+			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission does not exist.");
+			return false;
+		}
+		
+		config.getConfigurationSection("permissions").set(permName, null);
+		plugin.saveConfig();
+		
+		return true;
+	}
+	
 	public Set<String> getPermissions() {
 		Set<String> permissions = config.getConfigurationSection("permissions").getKeys(false);
 		return permissions;
@@ -117,7 +165,7 @@ public class Config {
 			
 	}
 
-
+	
 	public static permissionInfo getPermissionInfo(String permissionName) throws Exception {
 
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
@@ -125,11 +173,20 @@ public class Config {
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 			
 			myReturner.name = (String) permissionName;
-			myReturner.command = (String) groupSection.get("command");
-			myReturner.price = (Integer) groupSection.get("price");
-			myReturner.duration = (Integer) groupSection.get("duration");
-			myReturner.uses = (Integer) groupSection.get("uses");
-			
+			if (groupSection.isSet("command"))
+				myReturner.command = (String) groupSection.get("command");
+
+			myReturner.price = 0;
+			if (groupSection.isSet("price"))
+				myReturner.price = Integer.valueOf(groupSection.get("price").toString());
+
+			myReturner.duration = 0;
+			if (groupSection.isSet("duration"))
+				myReturner.duration = Integer.valueOf(groupSection.get("duration").toString());
+
+			myReturner.uses = 0;
+			if (groupSection.isSet("uses"))
+				myReturner.uses = Integer.valueOf(groupSection.get("uses").toString());
 			
 			
 			if (groupSection.isList("node")) {
@@ -173,6 +230,26 @@ public class Config {
 		return null;
 
 	}
+
+	public boolean isValidSetting(String oName){
+		log.info("isValidSetting oName: " + oName);
+
+		if (oName.equalsIgnoreCase("node"))
+			return true;
+		else if (oName.equalsIgnoreCase("command"))
+			return true;
+		else if (oName.equalsIgnoreCase("price"))
+			return true;
+		else if (oName.equalsIgnoreCase("uses"))
+			return true;
+		else if (oName.equalsIgnoreCase("duration"))
+			return true;
+		else if (oName.equalsIgnoreCase("payto"))
+			return true;
+		
+		return false;
+	}
+	
 
 	public static List getPermissionNode (String permissionName){
 		
