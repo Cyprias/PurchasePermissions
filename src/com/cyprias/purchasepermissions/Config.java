@@ -115,13 +115,13 @@ public class Config extends JavaPlugin {
 	}
 	
 	public Set<String> getPermissions() {
-		Set<String> permissions = config.getConfigurationSection("permissions").getKeys(false);
-		return permissions;
+		return config.getConfigurationSection("permissions").getKeys(false);
 	}
 
-	static class permissionInfo {
+	public static class permissionInfo {
 		String name;
 		List<String> node;
+		List<String> world;
 		String command;
 		int price;
 		int duration;
@@ -165,6 +165,67 @@ public class Config extends JavaPlugin {
 			
 	}
 
+	public permissionInfo isValidCommand(String message) throws Exception{
+		Set<String> permissions = getPermissions();
+		
+		Config.permissionInfo info;
+		boolean found=false;
+		for (Object o : permissions) {
+			String command = plugin.config.getPermisionCommand(o.toString());
+			
+			
+			if (command != null && message.toLowerCase().contains(command.toLowerCase())) {
+				return getPermissionInfo(o.toString());
+				//return o.toString();
+			}
+			
+			
+			//for (String permissionName : info.node) {
+			//	log.info(info + permissionName);
+			//	
+			//	
+			//	
+			//}
+			
+		}
+		
+		return null;
+	}
+	
+	public boolean canUsePermissionInWorld(Player player, String permissionName){
+		String aWorld = player.getLocation().getWorld().getName().toString();
+		//log.info(plugin.chatPrefix + "canUsePermissionInWorld: 1 " + permissionName + " " + aWorld);
+		List<String> worlds = getPermissionWorlds(permissionName);
+		if (worlds == null){
+			return true;
+		}
+		for (String wName : worlds) {
+			//log.info(node + permissionName);
+			if (aWorld.equalsIgnoreCase(wName)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	public List<String> getPermissionWorlds (String permissionName){
+		List<String> worlds = null;
+		
+		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+			if (groupSection.isList("world")) {
+				worlds = groupSection.getStringList("world");
+			
+			}else if (groupSection.isString("world")) {
+				worlds = new ArrayList();
+				worlds.add(groupSection.getString("world"));
+			}
+		}
+		return worlds;
+	}
+	
+	
 	
 	public static permissionInfo getPermissionInfo(String permissionName) throws Exception {
 
@@ -199,6 +260,14 @@ public class Config extends JavaPlugin {
 				
 			//	myReturner.node.add(e)
 				
+			}
+			
+			if (groupSection.isList("world")) {
+				myReturner.world = groupSection.getStringList("world");
+			
+			}else if (groupSection.isString("world")) {
+				myReturner.world = new ArrayList();
+				myReturner.world.add(groupSection.getString("world"));
 			}
 			
 			return myReturner;
@@ -273,7 +342,7 @@ public class Config extends JavaPlugin {
 		return node;
 	}
 	
-	public static String getPermisionCommand (String permissionName){
+	public String getPermisionCommand (String permissionName){
 		
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();

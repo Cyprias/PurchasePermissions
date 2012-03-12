@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 //import com.cyprias.purchasepermissions.economy;
 public class PurchasePermissions extends JavaPlugin {
 	public static File folder = new File("plugins/PurchasePermissions");
@@ -79,22 +80,24 @@ public class PurchasePermissions extends JavaPlugin {
 	private String stFailedToBuyPerm = chatPrefix + "§7failed to buy §f%s§7.";
 	private String stNotEnoughFunds = chatPrefix + "§7You don't have enought funds to buy §f%s§7.";
 	private String stPermRemoved = chatPrefix + "§f%s §7has been removed.";
-	
+
 	Logger log = Logger.getLogger("Minecraft");
 	public String name;
 	public String version;
 	public Config config;
-
+	public Database database;
+	public PlayerListener playerListener;
+	
 	public static Server server;
 
 	public static Economy econ = null;
-
-	private PlayerListener playerListener = new PlayerListener(this);
 
 	HashMap<String, PermissionAttachment> activePermissions;
 	private PurchasePermissions plugin;
 
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
+
+	
 
 	public void onEnable() {
 
@@ -105,7 +108,10 @@ public class PurchasePermissions extends JavaPlugin {
 
 		// Load config and permissions
 		config = new Config(this);
-
+		database = new Database(this);
+		playerListener = new PlayerListener(this);
+		
+		
 		// Register stuff
 		getServer().getPluginManager().registerEvents(playerListener, this);
 
@@ -153,7 +159,7 @@ public class PurchasePermissions extends JavaPlugin {
 		permissions.put(player.getName(), attachment);
 
 		try {
-			database.retrieveActivePermissions(player.getName());
+			database.retrieveActivePermissions(player);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -286,40 +292,42 @@ public class PurchasePermissions extends JavaPlugin {
 
 						String node = ChatColor.WHITE + info.name;
 
-						String price = "$"+Integer.toString(info.price);
+						String price = "$" + Integer.toString(info.price);
 
 						String duration = "";
-						
-						if (info.duration > 0){
-							duration = " " + database.secondsToString(info.duration*60);
+
+						if (info.duration > 0) {
+							duration = " " + database.secondsToString(info.duration * 60);
 						}
-						
+
 						String uses = "";
-						if (info.uses > 0){
+						if (info.uses > 0) {
 							uses = " x" + info.uses;
 						}
-						
-						
+
 						// if (sender.hasPermission(info.node)) {
 						// node = ChatColor.GRAY + info.name;
 						// }
 
 						ChatColor msgColour = ChatColor.GRAY;
-						
+
 						if (player != null) {
 							if (playerHasPermissions(player, info.node)) {
-							//	node = ChatColor.DARK_GRAY + info.name;
-								//price = ChatColor.DARK_GRAY + "$"+Integer.toString(info.price);
-								
+								// node = ChatColor.DARK_GRAY + info.name;
+								// price = ChatColor.DARK_GRAY +
+								// "$"+Integer.toString(info.price);
+
 								msgColour = ChatColor.DARK_GRAY;
 							} else if (getBalance(sender.getName()) >= info.price) {
 
-								//node = ChatColor.GREEN + info.name;
-								//price = ChatColor.GREEN + "$"+Integer.toString(info.price);
+								// node = ChatColor.GREEN + info.name;
+								// price = ChatColor.GREEN +
+								// "$"+Integer.toString(info.price);
 								msgColour = ChatColor.GREEN;
 							} else if (getBalance(sender.getName()) < info.price) {
-								//node = ChatColor.RED + info.name;
-								//price = ChatColor.RED + "$"+Integer.toString(info.price);
+								// node = ChatColor.RED + info.name;
+								// price = ChatColor.RED +
+								// "$"+Integer.toString(info.price);
 								msgColour = ChatColor.RED;
 							}
 						}
@@ -387,7 +395,7 @@ public class PurchasePermissions extends JavaPlugin {
 				try {
 
 					database.removeActivePermissions(player.getName());
-					database.retrieveActivePermissions(player.getName());
+					database.retrieveActivePermissions(player);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -476,16 +484,14 @@ public class PurchasePermissions extends JavaPlugin {
 					sender.sendMessage(stPermNoExists.format(stPermNoExists, args[1].toString()));
 					return true;
 				}
-				//sender.sendMessage(stPermNoExists.format(stPermNoExists, args[1].toString()));
-				
-				
-				if (config.removePermission(player, args[1])){
+				// sender.sendMessage(stPermNoExists.format(stPermNoExists,
+				// args[1].toString()));
+
+				if (config.removePermission(player, args[1])) {
 					sender.sendMessage(stPermRemoved.format(stPermRemoved, args[1].toString()));
 					return true;
 				}
-				
-				
-				
+
 			} else if (args[0].equalsIgnoreCase("buy")) {
 				if (args.length == 1) {
 
@@ -536,7 +542,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 								sender.sendMessage(stFailedToBuyPerm.format(stFailedToBuyPerm, info.name));
 							}
-							database.retrieveActivePermissions(sender.getName());
+							database.retrieveActivePermissions(player);
 							// pb.loadPlayerPermissions(sender.getName());
 
 							// econ.withdrawPlayer(sender.getName(), info.price
@@ -646,4 +652,5 @@ public class PurchasePermissions extends JavaPlugin {
 		text = text.replace("\r\n", " ").replace("\n", " ");
 		return text.trim();
 	}
+
 }

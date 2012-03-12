@@ -1,5 +1,6 @@
 package com.cyprias.purchasepermissions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -21,8 +23,6 @@ import com.cyprias.purchasepermissions.PlayerListener.commandInfo;
 class PlayerListener implements Listener {
 	private PurchasePermissions plugin;
 	static Logger log = Logger.getLogger("Minecraft");
-
-	public database db;
 
 	public PlayerListener(PurchasePermissions plugin) {
 		this.plugin = plugin;
@@ -58,10 +58,28 @@ class PlayerListener implements Listener {
 		// addPermission(event.getPlayer().getName(), "time");
 	}
 
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+		
+		String playerName = event.getPlayer().getName();
+		if (plugin.permissions.containsKey(playerName)) {
+			
+			try {
+				//log.info(playerName + " changed worlds, reloading permissions");
+				plugin.database.removeActivePermissions(playerName);
+				plugin.database.retrieveActivePermissions(event.getPlayer());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
 	public List<commandInfo> usedCommands = new ArrayList<commandInfo>();
 
 	static class commandInfo {
-		String playerName;
+		Player player;
 		String message;
 	}
 
@@ -75,11 +93,13 @@ class PlayerListener implements Listener {
 
 		commandInfo newCmd = new commandInfo();
 
-		newCmd.playerName = event.getPlayer().getName();
+		newCmd.player = event.getPlayer();
 		newCmd.message = event.getMessage().toString();
 
 		// log.info("size 1 " + usedCommands.size());
 
+		
+		
 		usedCommands.add(newCmd);
 		// log.info("size 2 " + usedCommands.size());
 
@@ -95,7 +115,7 @@ class PlayerListener implements Listener {
 						// usedCommands.get(i).message);
 
 						try {
-							database.commandUsed(usedCommands.get(i).playerName, usedCommands.get(i).message);
+							plugin.database.commandUsed(usedCommands.get(i).player, usedCommands.get(i).message);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -146,26 +166,18 @@ class PlayerListener implements Listener {
 			List<String> nodes = Config.getPermissionNode(permissionName);
 			// log.info("Player addPermission 3");
 			if (nodes != null) {
-				// log.info("Player addPermission 4");
-	
-				// Player player = plugin.getServer().getPlayer(pName);
-				// log.info("Player addPermission 5");
-				// if (player != null){
-				
-				
+
 				
 				log.info(PurchasePermissions.chatPrefix + " Removing " + nodes + " to " + pName + ".");
 				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
 				// log.info("Player addPermission 6");
 	
 				for (String nodeName : nodes) {
-					// attachment.setPermission(nodeName, true);
 					attachment.unsetPermission(nodeName);
 				}
-	
-				// log.info("Player addPermission 7");
-				// }
+
 			}
 		//}
 	}
+	
 }
