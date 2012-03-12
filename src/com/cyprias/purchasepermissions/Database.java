@@ -89,7 +89,7 @@ public class Database {
 		return System.currentTimeMillis() / 1000L;
 	}
 
-	public static boolean addPlayer(String playerName, Config.permissionInfo pInfo) throws Exception {
+	public boolean addPlayer(String playerName, Config.permissionInfo pInfo) throws Exception {
 		Class.forName("com.mysql.jdbc.Driver");
 
 		double expires = 0;
@@ -115,7 +115,7 @@ public class Database {
 		return false;
 	}
 
-	public static String secondsToString(long totalSeconds) {
+	public String secondsToString(long totalSeconds) {
 		long hours = totalSeconds / 3600;
 		long remainder = totalSeconds % 3600, minutes = remainder / 60, seconds = remainder % 60;
 		return hours + "h" + minutes + "m" + seconds + "s";

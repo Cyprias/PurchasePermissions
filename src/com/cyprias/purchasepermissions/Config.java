@@ -28,7 +28,7 @@ public class Config extends JavaPlugin {
 	public static String DbDatabase;
 	public static String DbTable;
 
-	public static String defaultLocale;
+	public static String locale;
 	public static boolean autoLoadDefaultLocales;
 	
 	private static Configuration config;
@@ -53,7 +53,7 @@ public class Config extends JavaPlugin {
 		
 		notifyPurchase = config.getString("notifyPurchase");
 		
-		defaultLocale = config.getString("defaultLocale");
+		locale = config.getString("locale");
 		autoLoadDefaultLocales = config.getBoolean("autoLoadDefaultLocales");
 
 		

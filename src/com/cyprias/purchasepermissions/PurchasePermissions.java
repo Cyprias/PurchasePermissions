@@ -16,17 +16,14 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 //import com.cyprias.purchasepermissions.economy;
 public class PurchasePermissions extends JavaPlugin {
@@ -38,49 +35,6 @@ public class PurchasePermissions extends JavaPlugin {
 	public static String perm_modify = "purchasepermissions.modify";
 	public static String perm_remove = "purchasepermissions.remove";
 	public static String perm_loadlocales = "purchasepermissions.loadlocales";
-	
-	private String stPermModifed = chatPrefix + "§f%s§7's §f%s §7is set to §f%s§7.";
-	private String stPluginEnabled = chatPrefix + "§f%s §7v§f%s §7is enabled.";
-	private String stPurchaseNotify = chatPrefix + "§f%s §7has purchased §f%s§7 for §f%s§7.";
-	private String stAvailableCommands1 = chatPrefix + "§a/pp list §f- List all permissions.";
-	private String stAvailableCommands2 = chatPrefix + "§a/pp info <permission> §f- Get info on a permission.";
-	private String stAvailableCommands3 = chatPrefix + "§a/pp buy <permission> §7[player]§f §f- Buy a permission.";
-	private String stAvailableCommands4 = chatPrefix + "§a/pp active §f- Display your active permissions.";
-
-	private String stAvailableCommandsCreate = chatPrefix + "§a/pp create <permission> §f- Create a new permission.";
-	private String stAvailableCommandsModify = chatPrefix + "§a/pp modify <permission> <setting> <value> §f- Modify a permission.";
-	private String stAvailableCommandsRemove = chatPrefix + "§a/pp remove <permission> §f- remove a permission.";
-
-	private String stAvailablePermissions = chatPrefix + " §7Available permissions";
-	private String stIncludePermissionName = chatPrefix + " §7You need to include the permission's name.";
-	private String stPermissionInfo = chatPrefix + "%s §7Info.";
-	private String stPermissionInfoNode = "  §7node: %s";
-	private String stPermissionInfoCommand = "  §7command: %s";
-	private String stPermissionInfoPrice = "  §7price: $%s";
-	private String stPermissionInfoDuration = "  §7duration: %s";
-	private String stPermissionInfoUse = "  §7uses: %s";
-	private String stPermNoExist = chatPrefix + "§7Permission '§f%s§7' does not exist, try again.";
-	private String stIncludeName = chatPrefix + "§7You need to include a name.";
-	private String stPermCreated = chatPrefix + "§7Permission created, use /pp modify to set it's settings.";
-	private String stAvailableSettings = chatPrefix + "§7Available settings";
-	private String stAvailableSettingsNode = "  §anode §7- The permission node users will receive.";
-	private String stAvailableSettingsPrice = "  §aprice §7- The cost of the permision.";
-	private String stAvailableSettingsDuration = "  §aduration §7- How long users should have the permission (in minutes).";
-	private String stAvailableSettingsCommand = "  §acommand §7- command that's associated with the permision";
-	private String stAvailableSettingsUses = "  §auses §7- How many times a user can use that command.";
-	private String stAvailableSettingsPayto = "  §apayto §7- Who should recieve the funds from the permission purchase. (default noone)";
-	private String stPermNoExists = chatPrefix + "§f%s §7does not exist, you need to create it first.";
-	private String stIncludeSettingName = chatPrefix + "§7You need to include a setting name. (§f/pp modify§7 for a list)";
-	private String stNotValidSetting = chatPrefix + "§f%s§7 is not a valid permission setting.";
-	private String stIncludeSettingPerm = chatPrefix + "§fYou need to include the value for §f%s.";
-	private String stIncludePermName = chatPrefix + "§fYou need to include the permission's name.";
-	private String stAlreadyOwnPerm = chatPrefix + "§fYou already own that permission.";
-	private String stUserBoughtPerm = chatPrefix + "%s bought %s for %s.";
-	private String stPaidUser = chatPrefix + "§7Paid §f%s §7$§f%d§7.";
-	private String stPurchasedPerm = chatPrefix + "§f%s §7purchased for §f%s§7.";
-	private String stFailedToBuyPerm = chatPrefix + "§7failed to buy §f%s§7.";
-	private String stNotEnoughFunds = chatPrefix + "§7You don't have enought funds to buy §f%s§7.";
-	private String stPermRemoved = chatPrefix + "§f%s §7has been removed.";
 
 	Logger log = Logger.getLogger("Minecraft");
 	public String name;
@@ -88,22 +42,19 @@ public class PurchasePermissions extends JavaPlugin {
 	public Config config;
 	public Database database;
 	public PlayerListener playerListener;
-	public Localization L;
-	
+	public Localization localization;
+
+	// private HashMap<String, String> L; // = localization.L;
+
 	public static Server server;
 
 	public static Economy econ = null;
 
 	HashMap<String, PermissionAttachment> activePermissions;
-	private PurchasePermissions plugin;
 
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 
-	
-
 	public void onEnable() {
-
-		PluginManager pm = getServer().getPluginManager();
 		server = getServer();
 		name = this.getDescription().getName();
 		version = this.getDescription().getVersion();
@@ -112,17 +63,12 @@ public class PurchasePermissions extends JavaPlugin {
 		config = new Config(this);
 		database = new Database(this);
 		playerListener = new PlayerListener(this);
-		L = new Localization(this);
-		
+		localization = new Localization(this);
+		// L=localization.L;
+
 		// Register stuff
 		getServer().getPluginManager().registerEvents(playerListener, this);
 
-		/*
-		 * if (!setupEconomy()) { log.info(String.format(
-		 * "[%s] - Disabled due to no Vault dependency found!",
-		 * getDescription().getName()));
-		 * getServer().getPluginManager().disablePlugin(this); return; }
-		 */
 		try {
 			database.setupMysql();
 		} catch (Exception e) {
@@ -147,7 +93,7 @@ public class PurchasePermissions extends JavaPlugin {
 			registerPlayer(p);
 		}
 
-		log.info(String.format(stPluginEnabled, name, version));
+		log.info(F("stPluginEnabled", name, version));
 	}
 
 	protected void registerPlayer(Player player) {
@@ -189,18 +135,19 @@ public class PurchasePermissions extends JavaPlugin {
 		}
 	}
 
-	public void resetAllPermissions(){
+	public void resetAllPermissions() {
 		for (Player p : getServer().getOnlinePlayers()) {
 			resetPlayerPermissions(p);
 		}
 	}
-	
-	public void resetPlayerPermissions(Player player){
+
+	public void resetPlayerPermissions(Player player) {
 		String playerName = player.getName();
 		if (permissions.containsKey(playerName)) {
-			
+
 			try {
-				//log.info(playerName + " changed worlds, reloading permissions");
+				// log.info(playerName +
+				// " changed worlds, reloading permissions");
 				database.removeActivePermissions(playerName);
 				database.retrieveActivePermissions(player);
 			} catch (SQLException e) {
@@ -209,7 +156,7 @@ public class PurchasePermissions extends JavaPlugin {
 			}
 		}
 	}
-	
+
 	public void onDisable() {
 		for (Player p : getServer().getOnlinePlayers()) {
 			unregisterPlayer(p);
@@ -252,7 +199,7 @@ public class PurchasePermissions extends JavaPlugin {
 			if (sender != oPlayer) {
 				if (oPlayer.hasPermission(Config.notifyPurchase)) {
 
-					oPlayer.sendMessage(String.format(stPurchaseNotify, sender.getDisplayName(), permissionName, target));
+					oPlayer.sendMessage(String.format(L("stPurchaseNotify"), sender.getDisplayName(), permissionName, target));
 					// } else {
 					// log.info(oPlayer.getName() + " does not have access to "
 					// +
@@ -283,17 +230,17 @@ public class PurchasePermissions extends JavaPlugin {
 				// sender.sendMessage(chatPrefix + "Include a message.");
 				// log.info(chatPrefix + "/pp list - List all permissions.");
 
-				sender.sendMessage(stAvailableCommands1);
-				sender.sendMessage(stAvailableCommands2);
-				sender.sendMessage(stAvailableCommands3);
-				sender.sendMessage(stAvailableCommands4);
+				sender.sendMessage(chatPrefix + L("stAvailableCommands1"));
+				sender.sendMessage(chatPrefix + L("stAvailableCommands2"));
+				sender.sendMessage(chatPrefix + L("stAvailableCommands3"));
+				sender.sendMessage(chatPrefix + L("stAvailableCommands4"));
 
 				if (player.hasPermission(perm_create))
-					player.sendMessage(stAvailableCommandsCreate);
+					player.sendMessage(chatPrefix + L("stAvailableCommandsCreate"));
 				if (player.hasPermission(perm_modify))
-					player.sendMessage(stAvailableCommandsModify);
+					player.sendMessage(chatPrefix + L("stAvailableCommandsModify"));
 				if (player.hasPermission(perm_remove))
-					player.sendMessage(stAvailableCommandsRemove);
+					player.sendMessage(chatPrefix + L("stAvailableCommandsRemove"));
 
 				return true;
 			}
@@ -302,7 +249,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Set<String> permissions = config.getPermissions();
 
-				sender.sendMessage(stAvailablePermissions);
+				sender.sendMessage(chatPrefix+L("stAvailablePermissions"));
 
 				Config.permissionInfo info;
 
@@ -368,7 +315,7 @@ public class PurchasePermissions extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("info")) {
 				if (args.length == 1) {
 
-					sender.sendMessage(stIncludePermissionName);
+					sender.sendMessage(L("stIncludePermissionName"));
 					return true;
 				}
 
@@ -377,32 +324,36 @@ public class PurchasePermissions extends JavaPlugin {
 					info = Config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						sender.sendMessage(stPermissionInfo.format(stPermissionInfo, args[1]));
-						sender.sendMessage(stPermissionInfoNode.format(stPermissionInfoNode, info.node));
-						sender.sendMessage(stPermissionInfoCommand.format(stPermissionInfoCommand, info.command));
-						sender.sendMessage(stPermissionInfoPrice.format(stPermissionInfoPrice, info.price));
+						sender.sendMessage(chatPrefix+F("stPermissionInfo", args[1]));
+						sender.sendMessage(F("stPermissionInfoNode", info.node));
+						if (info.command != null)
+							sender.sendMessage(F("stPermissionInfoCommand", info.command));
+						sender.sendMessage(F("stPermissionInfoPrice", info.price));
 
 						if (info.duration > 0) {
-							sender.sendMessage(stPermissionInfoDuration.format(stPermissionInfoDuration, database.secondsToString(info.duration * 60)));
+							sender.sendMessage(F("stPermissionInfoDuration", database.secondsToString(info.duration * 60)));
 
 						} else {
-							sender.sendMessage(stPermissionInfoDuration.format(stPermissionInfoDuration, "Unlimited"));
+							sender.sendMessage(F("stPermissionInfoDuration", "Unlimited"));
 						}
 
 						if (info.uses > 0) {
-							sender.sendMessage(stPermissionInfoDuration.format(stPermissionInfoUse, info.uses));
+							sender.sendMessage(F("stPermissionInfoUse", info.uses));
 
 						} else {
-							sender.sendMessage(stPermissionInfoDuration.format(stPermissionInfoUse, "Unlimited"));
+							sender.sendMessage(F("stPermissionInfoUse", "Unlimited"));
 						}
 
+						if (info.world != null)
+							sender.sendMessage(F("stPermissionInfoWorld", info.world));
+						
 						// sender.sendMessage("  You have permission: " +
 						// database.isPermissionActive(player.getName().toString(),
 						// args[1].toString()));
 
 					} else {
 
-						sender.sendMessage(stPermNoExist.format(args[1]));
+						sender.sendMessage(F("stPermNoExist", args[1]));
 					}
 
 				} catch (Exception e) {
@@ -428,7 +379,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				return true;
 			} else if (args[0].equalsIgnoreCase("active")) {
-				database.showActivePermissions(player);
+				Database.showActivePermissions(player);
 				return true;
 			} else if (args[0].equalsIgnoreCase("reload")) {
 
@@ -444,85 +395,83 @@ public class PurchasePermissions extends JavaPlugin {
 				// purchasepermissions.create
 				if (args.length == 1) {
 
-					sender.sendMessage(stIncludeName);
+					sender.sendMessage(L("stIncludeName"));
 					return true;
 				}
 
 				log.info(chatPrefix + " create 1");
 
 				if (config.createPermission(player, args[1])) {
-					sender.sendMessage(stPermCreated);
+					sender.sendMessage(F("stPermCreated", args[1], args[1]));
 				}
 
 				return true;
-				
-				
-				
+
 			} else if (args[0].equalsIgnoreCase("modify") && sender.hasPermission(perm_modify)) {
 				if (args.length == 1) {
 
-					sender.sendMessage(stAvailableSettings);
-					sender.sendMessage(stAvailableSettingsNode);
-					sender.sendMessage(stAvailableSettingsPrice);
-					sender.sendMessage(stAvailableSettingsDuration);
-					sender.sendMessage(stAvailableSettingsCommand);
-					sender.sendMessage(stAvailableSettingsUses);
-					sender.sendMessage(stAvailableSettingsPayto);
+					sender.sendMessage(L("stAvailableSettings"));
+					sender.sendMessage(L("stAvailableSettingsNode"));
+					sender.sendMessage(L("stAvailableSettingsPrice"));
+					sender.sendMessage(L("stAvailableSettingsDuration"));
+					sender.sendMessage(L("stAvailableSettingsCommand"));
+					sender.sendMessage(L("stAvailableSettingsUses"));
+					sender.sendMessage(L("stAvailableSettingsPayto"));
 					return true;
 				}
 
 				// SQL = String.format(SQL, Config.DbTable);
 
 				if (!config.permissionExists(args[1].toString())) {
-					sender.sendMessage(stPermNoExists.format(stPermNoExists, args[1].toString()));
+					sender.sendMessage(F("stPermNoExists", args[1].toString()));
 					return true;
 				}
 
 				if (args.length == 2) {
-					sender.sendMessage(stIncludeSettingName);
+					sender.sendMessage(L("stIncludeSettingName"));
 					return true;
 				}
 
 				if (config.isValidSetting(args[2].toString()) == false) {
-					sender.sendMessage(stNotValidSetting.format(stNotValidSetting, args[2].toString()));
+					sender.sendMessage(F("stNotValidSetting", args[2].toString()));
 					return true;
 				}
 
 				if (args.length == 3) {
 
-					sender.sendMessage(stIncludeSettingPerm.format(stIncludeSettingPerm, args[2]));
+					sender.sendMessage(F("stIncludeSettingPerm", args[2]));
 					return true;
 				}
 
 				if (config.modifyPermissionSetting(player, args[1], args[2], args[3])) {
 					resetAllPermissions();
-					sender.sendMessage(String.format(stPermModifed, args[1], args[2], args[3]));
+					sender.sendMessage(String.format(L("stPermModifed"), args[1], args[2], args[3]));
 				}
 
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("remove") && player.hasPermission(perm_remove)) {
 				if (args.length == 1) {
-					player.sendMessage(stIncludeName);
+					player.sendMessage(L("stIncludeName"));
 					return true;
 				}
 
 				if (!config.permissionExists(args[1].toString())) {
-					sender.sendMessage(stPermNoExists.format(stPermNoExists, args[1].toString()));
+					sender.sendMessage(chatPrefix + F("stPermNoExists", args[1].toString()));
 					return true;
 				}
 				// sender.sendMessage(stPermNoExists.format(stPermNoExists,
 				// args[1].toString()));
 
 				if (config.removePermission(player, args[1])) {
-					sender.sendMessage(stPermRemoved.format(stPermRemoved, args[1].toString()));
+					sender.sendMessage(chatPrefix + F("stPermRemoved", args[1].toString()));
 					return true;
 				}
 
 			} else if (args[0].equalsIgnoreCase("buy")) {
 				if (args.length == 1) {
 
-					sender.sendMessage(stIncludePermName);
+					sender.sendMessage(L("stIncludePermName"));
 					return true;
 				}
 
@@ -533,7 +482,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 						if (database.isPermissionActive(player.getName(), args[1].toString())) {
 
-							sender.sendMessage(stAlreadyOwnPerm);
+							sender.sendMessage(L("stAlreadyOwnPerm"));
 							return true;
 						}
 
@@ -544,7 +493,7 @@ public class PurchasePermissions extends JavaPlugin {
 							if (args.length == 3) {
 								target = args[2];
 
-								log.info(stUserBoughtPerm.format(stUserBoughtPerm, sender.getName(), info.name, target));
+								log.info(F("stUserBoughtPerm", sender.getName(), info.name, target));
 							}
 
 							database.removeActivePermissions(sender.getName());
@@ -557,17 +506,17 @@ public class PurchasePermissions extends JavaPlugin {
 								if (payTo != null) {
 									if (payPlayer(payTo, info.price)) {
 
-										sender.sendMessage(stPaidUser.format(stPaidUser, payTo, info.price));
+										sender.sendMessage(F("stPaidUser", payTo, info.price));
 									}
 								}
 
-								sender.sendMessage(stPurchasedPerm.format(stPurchasedPerm, info.name, target));
+								sender.sendMessage(chatPrefix + F("stPurchasedPerm", info.name, target));
 
 								notifyUsersOfPurchase(player, info.name, target);
 
 							} else {
 
-								sender.sendMessage(stFailedToBuyPerm.format(stFailedToBuyPerm, info.name));
+								sender.sendMessage(F("stFailedToBuyPerm", info.name));
 							}
 							database.retrieveActivePermissions(player);
 							// pb.loadPlayerPermissions(sender.getName());
@@ -576,13 +525,13 @@ public class PurchasePermissions extends JavaPlugin {
 
 						} else {
 
-							sender.sendMessage(stNotEnoughFunds.format(stNotEnoughFunds, info.price));
+							sender.sendMessage(F("stNotEnoughFunds", info.name));
 						}
 						// econ.withdrawPlayer(sender.getName(), info.price);
 
 					} else {
 
-						sender.sendMessage(stPermNoExist.format(stPermNoExist, args[1]));
+						sender.sendMessage(F("stPermNoExist", args[1]));
 					}
 
 				} catch (Exception e) {
@@ -591,7 +540,7 @@ public class PurchasePermissions extends JavaPlugin {
 				}
 				return true;
 			} else if (args[0].equalsIgnoreCase("locales") && player.hasPermission(perm_loadlocales)) {
-				L.loadDefaultLocales(true);
+				localization.loadDefaultLocales(true);
 				return true;
 			} else if (args[0].equalsIgnoreCase("test")) {
 				// sender.sendMessage("currentTimeMillis: " +
@@ -601,9 +550,13 @@ public class PurchasePermissions extends JavaPlugin {
 
 				// Config.testList();
 
-				L.listLocales();
-				//L.testLocales();
-				
+				// localization.listLocales();
+
+				// sender.sendMessage(String.format(L("testMsg"), senderName));
+				// sender.sendMessage(L("testMsg"));
+
+				// L.testLocales();
+
 				return true;
 			}
 
@@ -612,13 +565,28 @@ public class PurchasePermissions extends JavaPlugin {
 		return false;
 	}
 
+	private String L(String key) {
+		return localization.L.get(key);
+	}
+
+	
+	
+	private String F(String key, Object... args) {
+		String value = localization.L.get(key).toString();
+		if (value != null || args != null)
+			value = String.format(value, args); //arg.toString()
+		
+		return value;
+	}
+
 	public boolean playerHasPermissions(Player player, List<String> nodes) {
 
-		for (String permissionName : nodes) {
-			if (!player.hasPermission(permissionName)) {
-				return false;
+		if (nodes != null)
+			for (String permissionName : nodes) {
+				if (!player.hasPermission(permissionName)) {
+					return false;
+				}
 			}
-		}
 
 		return true;
 	}
