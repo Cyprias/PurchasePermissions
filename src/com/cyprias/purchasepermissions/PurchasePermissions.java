@@ -187,6 +187,27 @@ public class PurchasePermissions extends JavaPlugin {
 		}
 	}
 
+	public void resetAllPermissions(){
+		for (Player p : getServer().getOnlinePlayers()) {
+			resetPlayerPermissions(p);
+		}
+	}
+	
+	public void resetPlayerPermissions(Player player){
+		String playerName = player.getName();
+		if (permissions.containsKey(playerName)) {
+			
+			try {
+				//log.info(playerName + " changed worlds, reloading permissions");
+				database.removeActivePermissions(playerName);
+				database.retrieveActivePermissions(player);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void onDisable() {
 		for (Player p : getServer().getOnlinePlayers()) {
 			unregisterPlayer(p);
@@ -374,7 +395,7 @@ public class PurchasePermissions extends JavaPlugin {
 						}
 
 						// sender.sendMessage("  You have permission: " +
-						// database.permissionInDB(player.getName().toString(),
+						// database.isPermissionActive(player.getName().toString(),
 						// args[1].toString()));
 
 					} else {
@@ -432,7 +453,10 @@ public class PurchasePermissions extends JavaPlugin {
 				}
 
 				return true;
-			} else if (args[0].equalsIgnoreCase("modify") && player.hasPermission(perm_modify)) {
+				
+				
+				
+			} else if (args[0].equalsIgnoreCase("modify") && sender.hasPermission(perm_modify)) {
 				if (args.length == 1) {
 
 					sender.sendMessage(stAvailableSettings);
@@ -469,6 +493,7 @@ public class PurchasePermissions extends JavaPlugin {
 				}
 
 				if (config.modifyPermissionSetting(player, args[1], args[2], args[3])) {
+					resetAllPermissions();
 					sender.sendMessage(String.format(stPermModifed, args[1], args[2], args[3]));
 				}
 
@@ -504,7 +529,7 @@ public class PurchasePermissions extends JavaPlugin {
 					info = Config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						if (database.permissionInDB(player.getName().toString(), args[1].toString())) {
+						if (database.isPermissionActive(player.getName(), args[1].toString())) {
 
 							sender.sendMessage(stAlreadyOwnPerm);
 							return true;

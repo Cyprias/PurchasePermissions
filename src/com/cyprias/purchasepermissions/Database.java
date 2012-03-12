@@ -64,7 +64,7 @@ public class Database {
 		con.close();
 	}
 
-	public static void removeActivePermissions(String playerName) throws SQLException {
+	public void removeActivePermissions(String playerName) throws SQLException {
 
 		String SQL = "SELECT * FROM `" + Config.DbTable + "` WHERE `player` = '" + playerName + "'";
 
@@ -201,7 +201,7 @@ public class Database {
 		
 		//pInfo.
 		
-		if (plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
+		if (isPermissionActive(player.getName(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
 			
 			if (! plugin.playerHasPermissions(player, pInfo.node)) {//Make sure other permission plugins don't either before notifying user.
 				player.sendMessage(stCannotUsePermInWorld.format(stCannotUsePermInWorld, pInfo.name));
@@ -210,7 +210,7 @@ public class Database {
 		}
 			
 	
-		log.info("commandUsed: " + pInfo.name);
+		//log.info("commandUsed: " + pInfo.name);
 		
 		String SQL = "select * from " + Config.DbTable + 
 		" WHERE player = '" + playerName.toString() + "'" + 
@@ -226,7 +226,7 @@ public class Database {
 			int uses = result.getInt(col_remainingUses);
 			int pID = result.getInt(col_id);
 			
-			log.info("commandUsed result: " + pID + " " + uses);
+			//log.info("commandUsed result: " + pID + " " + uses);
 			
 			if (uses == 1) {
 
@@ -311,10 +311,10 @@ public class Database {
 
 
 
-	public boolean permissionInDB(String playerName, String permissionName) throws Exception {
+	public boolean isPermissionActive(String playerName, String permissionName) throws Exception {
 		boolean found = false;
 
-		String SQL = "select * from " + Config.DbTable.toString() + " WHERE `player` = '" + playerName + "' AND `permission` = '" + permissionName
+		String SQL = "select * from " + Config.DbTable.toString() + " WHERE player = '" + playerName + "' AND permission = '" + permissionName
 			+ "' LIMIT 0 , 5";
 
 		Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
@@ -328,7 +328,7 @@ public class Database {
 			String name = result.getString(col_player);
 			String permission = result.getString(col_permission);
 
-			log.info("permissionInDB " + id);
+			//log.info("isPermissionActive " + id);
 			// return true
 			found = true;
 			break;

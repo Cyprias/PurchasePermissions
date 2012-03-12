@@ -194,18 +194,18 @@ public class Config extends JavaPlugin {
 	
 	public boolean canUsePermissionInWorld(Player player, String permissionName){
 		String aWorld = player.getLocation().getWorld().getName().toString();
+
 		//log.info(plugin.chatPrefix + "canUsePermissionInWorld: 1 " + permissionName + " " + aWorld);
 		List<String> worlds = getPermissionWorlds(permissionName);
 		if (worlds == null){
 			return true;
 		}
 		for (String wName : worlds) {
-			//log.info(node + permissionName);
 			if (aWorld.equalsIgnoreCase(wName)) {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 	
@@ -214,13 +214,25 @@ public class Config extends JavaPlugin {
 		
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			if (groupSection.isList("world")) {
-				worlds = groupSection.getStringList("world");
+			if (groupSection.isSet("world"))
+				/**/
+				if (groupSection.isList("world")) {
+					worlds = groupSection.getStringList("world");
+				}else if (groupSection.isString("world")) {
+					
+					worlds = new ArrayList();
+					
+					String sWorld = groupSection.getString("world");
+					
+					if (sWorld.contains(",")){
+						String[] temp = sWorld.split(",");
+					for(int i =0; i < temp.length ; i++)
+						worlds.add(temp[i].trim());
+					}else
+						worlds.add(sWorld);
+
+				}
 			
-			}else if (groupSection.isString("world")) {
-				worlds = new ArrayList();
-				worlds.add(groupSection.getString("world"));
-			}
 		}
 		return worlds;
 	}
@@ -250,25 +262,45 @@ public class Config extends JavaPlugin {
 				myReturner.uses = Integer.valueOf(groupSection.get("uses").toString());
 			
 			
-			if (groupSection.isList("node")) {
-				myReturner.node = groupSection.getStringList("node");
+			if (groupSection.isSet("node"))
+				/**/
+				if (groupSection.isList("node")) {
+					myReturner.node = groupSection.getStringList("node");
+				}else if (groupSection.isString("node")) {
+					
+					myReturner.node = new ArrayList();
+					
+					String sNode = groupSection.getString("node");
+					
+					if (sNode.contains(",")){
+						String[] temp = sNode.split(",");
+					for(int i =0; i < temp.length ; i++)
+						myReturner.node.add(temp[i].trim());
+					}else
+						myReturner.node.add(sNode);
+
+				}
+		
+			 	
 			
-			}else if (groupSection.isString("node")) {
-				//log.info("String! " + groupSection.getString("node"));
-				myReturner.node = new ArrayList();
-				myReturner.node.add(groupSection.getString("node"));
-				
-			//	myReturner.node.add(e)
-				
-			}
-			
-			if (groupSection.isList("world")) {
-				myReturner.world = groupSection.getStringList("world");
-			
-			}else if (groupSection.isString("world")) {
-				myReturner.world = new ArrayList();
-				myReturner.world.add(groupSection.getString("world"));
-			}
+			if (groupSection.isSet("world"))
+				/**/
+				if (groupSection.isList("world")) {
+					myReturner.world = groupSection.getStringList("world");
+				}else if (groupSection.isString("world")) {
+					
+					myReturner.world = new ArrayList();
+					
+					String sWorld = groupSection.getString("world");
+					
+					if (sWorld.contains(",")){
+						String[] temp = sWorld.split(",");
+					for(int i =0; i < temp.length ; i++)
+						myReturner.world.add(temp[i].trim());
+					}else
+						myReturner.world.add(sWorld);
+
+				}
 			
 			return myReturner;
 			
@@ -301,7 +333,7 @@ public class Config extends JavaPlugin {
 	}
 
 	public boolean isValidSetting(String oName){
-		log.info("isValidSetting oName: " + oName);
+		//log.info("isValidSetting oName: " + oName);
 
 		if (oName.equalsIgnoreCase("node"))
 			return true;
@@ -314,6 +346,8 @@ public class Config extends JavaPlugin {
 		else if (oName.equalsIgnoreCase("duration"))
 			return true;
 		else if (oName.equalsIgnoreCase("payto"))
+			return true;
+		else if (oName.equalsIgnoreCase("world"))
 			return true;
 		
 		return false;

@@ -60,19 +60,7 @@ class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-		
-		String playerName = event.getPlayer().getName();
-		if (plugin.permissions.containsKey(playerName)) {
-			
-			try {
-				//log.info(playerName + " changed worlds, reloading permissions");
-				plugin.database.removeActivePermissions(playerName);
-				plugin.database.retrieveActivePermissions(event.getPlayer());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		plugin.resetPlayerPermissions(event.getPlayer());
 	}
 	
 	
