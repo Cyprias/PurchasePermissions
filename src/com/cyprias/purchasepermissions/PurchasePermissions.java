@@ -37,7 +37,8 @@ public class PurchasePermissions extends JavaPlugin {
 	public static String perm_create = "purchasepermissions.create";
 	public static String perm_modify = "purchasepermissions.modify";
 	public static String perm_remove = "purchasepermissions.remove";
-
+	public static String perm_loadlocales = "purchasepermissions.loadlocales";
+	
 	private String stPermModifed = chatPrefix + "§f%s§7's §f%s §7is set to §f%s§7.";
 	private String stPluginEnabled = chatPrefix + "§f%s §7v§f%s §7is enabled.";
 	private String stPurchaseNotify = chatPrefix + "§f%s §7has purchased §f%s§7 for §f%s§7.";
@@ -87,6 +88,7 @@ public class PurchasePermissions extends JavaPlugin {
 	public Config config;
 	public Database database;
 	public PlayerListener playerListener;
+	public Localization L;
 	
 	public static Server server;
 
@@ -110,7 +112,7 @@ public class PurchasePermissions extends JavaPlugin {
 		config = new Config(this);
 		database = new Database(this);
 		playerListener = new PlayerListener(this);
-		
+		L = new Localization(this);
 		
 		// Register stuff
 		getServer().getPluginManager().registerEvents(playerListener, this);
@@ -265,7 +267,7 @@ public class PurchasePermissions extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = null;
 
-		String senderName = "[SERVER]";
+		String senderName = "[CONSOLE]";
 
 		if (sender instanceof Player) {
 			player = (Player) sender;
@@ -588,7 +590,9 @@ public class PurchasePermissions extends JavaPlugin {
 					e.printStackTrace();
 				}
 				return true;
-
+			} else if (args[0].equalsIgnoreCase("locales") && player.hasPermission(perm_loadlocales)) {
+				L.loadDefaultLocales(true);
+				return true;
 			} else if (args[0].equalsIgnoreCase("test")) {
 				// sender.sendMessage("currentTimeMillis: " +
 				// System.currentTimeMillis());
@@ -597,24 +601,9 @@ public class PurchasePermissions extends JavaPlugin {
 
 				// Config.testList();
 
-				String node = "time";
-
-				if (args.length == 2) {
-					node = args[1];
-				}
-
-				Config.permissionInfo info;
-				try {
-					info = Config.getPermissionInfo(node);
-					for (String permissionName : info.node) {
-						log.info(node + permissionName);
-					}
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+				L.listLocales();
+				//L.testLocales();
+				
 				return true;
 			}
 

@@ -1,0 +1,5 @@
+enUS:
+    AvailableCommands: "&a/pp list &f- List all permissions."
+    AvailableCommands2: "&a/pp info <permission> &f- Get info on a permission."
+frFR:
+    AvailableCommands: "&a/pp list &f- List all permissions."

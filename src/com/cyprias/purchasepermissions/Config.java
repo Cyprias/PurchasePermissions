@@ -28,6 +28,9 @@ public class Config extends JavaPlugin {
 	public static String DbDatabase;
 	public static String DbTable;
 
+	public static String defaultLocale;
+	public static boolean autoLoadDefaultLocales;
+	
 	private static Configuration config;
 	static Logger log = Logger.getLogger("Minecraft");
 	private static List<String> list;
@@ -49,6 +52,10 @@ public class Config extends JavaPlugin {
 		DbTable = config.getString("mysql.table");
 		
 		notifyPurchase = config.getString("notifyPurchase");
+		
+		defaultLocale = config.getString("defaultLocale");
+		autoLoadDefaultLocales = config.getBoolean("autoLoadDefaultLocales");
+
 		
 		/*
 		 * Set<String> permissions =
