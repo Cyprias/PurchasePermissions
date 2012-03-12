@@ -56,36 +56,23 @@ public class Config extends JavaPlugin {
 		locale = config.getString("locale");
 		autoLoadDefaultLocales = config.getBoolean("autoLoadDefaultLocales");
 
-		
-		/*
-		 * Set<String> permissions =
-		 * config.getConfigurationSection("permissions").getKeys(false);
-		 * 
-		 * for (Object o : permissions) { String e = o.toString(); log.info(e);
-		 * }
-		 * 
-		 * Map<String, Object> permissions2 =
-		 * config.getConfigurationSection("permissions.time").getValues(false);
-		 * 
-		 * 
-		 * 
-		 * 
-		 * log.info("node: " + permissions2.get("node")); for (Map.Entry<String,
-		 * Object> entry : permissions2.entrySet()) { log.info(entry.getKey() +
-		 * ": " + entry.getValue().toString());
-		 * 
-		 * }
-		 */
 
 	}
 
+	private String L(String key) {
+		return plugin.L(key);
+	}
+	public String F(String key, Object... args) {
+		return plugin.F(key, args);
+	}
+	
 	public boolean permissionExists(String pName){
 		return (config.getConfigurationSection("permissions." + pName) != null);
 	}
 	
 	public boolean createPermission(Player sender, String permissionName){
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
-			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission name is already used.");
+			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionAlreadyExists", permissionName));
 			return false;
 		}
 		config.getConfigurationSection("permissions").createSection(permissionName);
@@ -97,7 +84,7 @@ public class Config extends JavaPlugin {
 	
 	public boolean modifyPermissionSetting(Player sender, String oName, String oSetting, String oValue){
 		if (config.getConfigurationSection("permissions." + oName) == null) {
-			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission does not exist.");
+			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", oName));
 			return false;
 		}
 
@@ -111,7 +98,7 @@ public class Config extends JavaPlugin {
 	
 	public boolean removePermission(Player sender, String permName){
 		if (config.getConfigurationSection("permissions." + permName) == null) {
-			sender.sendMessage(PurchasePermissions.chatPrefix + "That permission does not exist.");
+			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", permName));
 			return false;
 		}
 		
@@ -175,8 +162,8 @@ public class Config extends JavaPlugin {
 	public permissionInfo isValidCommand(String message) throws Exception{
 		Set<String> permissions = getPermissions();
 		
-		Config.permissionInfo info;
-		boolean found=false;
+		//Config.permissionInfo info;
+		//boolean found=false;
 		for (Object o : permissions) {
 			String command = plugin.config.getPermisionCommand(o.toString());
 			

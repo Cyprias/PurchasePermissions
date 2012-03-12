@@ -379,7 +379,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				return true;
 			} else if (args[0].equalsIgnoreCase("active")) {
-				Database.showActivePermissions(player);
+				database.showActivePermissions(player);
 				return true;
 			} else if (args[0].equalsIgnoreCase("reload")) {
 
@@ -565,17 +565,21 @@ public class PurchasePermissions extends JavaPlugin {
 		return false;
 	}
 
-	private String L(String key) {
+	public String L(String key) {
 		return localization.L.get(key);
 	}
 
 	
 	
-	private String F(String key, Object... args) {
+	public String F(String key, Object... args) {
 		String value = localization.L.get(key).toString();
-		if (value != null || args != null)
-			value = String.format(value, args); //arg.toString()
-		
+		try {
+			if (value != null || args != null)
+				value = String.format(value, args); //arg.toString()
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return value;
 	}
 
@@ -634,5 +638,24 @@ public class PurchasePermissions extends JavaPlugin {
 		text = text.replace("\r\n", " ").replace("\n", " ");
 		return text.trim();
 	}
-
+	
+	public String secondsToString(long totalSeconds){
+		
+		long days = totalSeconds / 86400;
+		long remainder = totalSeconds % 86400;
+		
+		long hours = remainder / 3600;
+		remainder = totalSeconds % 3600;
+		long minutes = remainder / 60;
+		long seconds = remainder % 60;
+		
+		if (days > 0)
+			return days + "d" + hours + "h" + minutes + "m" + seconds + "s";
+		else if (hours > 0)
+			return hours + "h" + minutes + "m" + seconds + "s";
+		else if (minutes > 0)
+			return minutes + "m" + seconds + "s";
+		else 
+			return seconds + "s";
+	}
 }

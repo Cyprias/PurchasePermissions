@@ -5,7 +5,7 @@ version: 0.1.1
 commands:
     pp:
       description: Test
-      usage: /<command> permissionName
+      usage: /<command>
 permissions:
     purchasepermissions.*:
         description: Gives access to all commands

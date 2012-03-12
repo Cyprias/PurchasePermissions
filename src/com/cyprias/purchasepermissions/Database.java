@@ -32,12 +32,16 @@ public class Database {
 	private PurchasePermissions plugin;
 
 	
-	
 	public Database(PurchasePermissions plugin) {
 		this.plugin = plugin;
 	}
 		
-
+	private String L(String key) {
+		return plugin.L(key);
+	}
+	public String F(String key, Object... args) {
+		return plugin.F(key, args);
+	}
 	
 	public void retrieveActivePermissions(Player player) throws SQLException {
 
@@ -121,7 +125,7 @@ public class Database {
 		return hours + "h" + minutes + "m" + seconds + "s";
 	}
 
-	public static void showActivePermissions(Player player) {
+	public void showActivePermissions(Player player) {
 
 		try {
 			String SQL = "select * from " + Config.DbTable + " WHERE player = '" + player.getName().toString() + "'";
@@ -139,10 +143,10 @@ public class Database {
 			while (result.next()) {
 				i = i + 1;
 
-				pMsg = PurchasePermissions.chatPrefix + i + ": Permission: " + ChatColor.GREEN + result.getString(col_permission);
+				pMsg = PurchasePermissions.chatPrefix + i + F("stActivePermission", result.getString(col_permission));
 
 				if (result.getInt(col_remainingUses) > 0) {
-					pMsg = pMsg + ChatColor.WHITE + ", Remaining uses: " + ChatColor.GREEN + result.getInt(col_remainingUses);
+					pMsg = pMsg + F("stActiveRemainingUses", result.getString(col_remainingUses) );
 				}
 
 				if (result.getInt(col_expires) > 0) {
@@ -150,14 +154,18 @@ public class Database {
 					long expires = result.getLong(col_expires);
 					long remaining = expires - currentTime;
 
-					long hours = remaining / 3600;
-					long remainder = remaining % 3600, minutes = remainder / 60, seconds = remainder % 60;
+					//long hours = remaining / 3600;
+					//long remainder = remaining % 3600, minutes = remainder / 60, seconds = remainder % 60;
 
 					// String disHour = (hours < 10 ? "0" : "") + hours,
 					// disMinu = (minutes < 10 ? "0" : "") + minutes ,
 					// disSec = (seconds < 10 ? "0" : "") + seconds ;
 
-					pMsg = pMsg + ChatColor.WHITE + ", Remaining time: " + ChatColor.GREEN + hours + "h " + minutes + "m " + seconds + "s";
+					//pMsg = pMsg + ChatColor.WHITE + ", Remaining time: " + ChatColor.GREEN + hours + "h " + minutes + "m " + seconds + "s";
+					pMsg = pMsg + F("stActiveRemainingTime", secondsToString(remaining));
+					
+					
+					
 
 				}
 
@@ -165,7 +173,7 @@ public class Database {
 
 			}
 			if (i == 0) {
-				player.sendMessage(PurchasePermissions.chatPrefix + "You have no purchased permisions.");
+				player.sendMessage(PurchasePermissions.chatPrefix + L("stNoActivePermissions"));
 			}
 
 			result.close();
@@ -236,8 +244,8 @@ public class Database {
 					PlayerListener.removePermission(playerName, pInfo.name);
 
 					if (user != null) {
-						user.sendMessage(PurchasePermissions.chatPrefix + "Your " + ChatColor.GREEN + pInfo.name + ChatColor.WHITE
-							+ " permission has expired.");
+						user.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", pInfo.name));
+						
 					}
 
 				}
@@ -256,57 +264,6 @@ public class Database {
 		statement.close();
 		con.close();
 		
-		/*
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
-		PreparedStatement statement = con.prepareStatement("select * from " + Config.DbTable + " WHERE player = '" + playerName.toString() + "'");
-		ResultSet result = statement.executeQuery();
-
-		while (result.next()) {
-			// String name = result.getString(col_player);
-			String permissionName = result.getString(col_permission);
-
-			String command = Config.getPermisionCommand(permissionName);
-
-			// log.info("Active: " + playerName + " " + permissionName + " /" +
-			// command);
-			if (command != null && message.contains("/" + command)) {
-				// log.info(playerName + " used their " + permissionName +
-				// " permission!");
-
-				int uses = result.getInt(col_remainingUses);
-				int pID = result.getInt(col_id);
-
-				if (uses == 1) {
-
-					if (removePermissionFromDB(pID)) {
-						Player user = PurchasePermissions.server.getPlayer(playerName);
-
-						PlayerListener.removePermission(playerName, permissionName);
-
-						if (user != null) {
-							user.sendMessage(PurchasePermissions.chatPrefix + "Your " + ChatColor.GREEN + permissionName + ChatColor.WHITE
-								+ " permission has expired.");
-						}
-
-					}
-				} else if (uses > 1) {
-
-					// UPDATE `minecraft`.`pp_players` SET `remainingUses` = '2'
-					// WHERE `pp_players`.`id` =33;
-
-					updatePermissionUses(pID, uses - 1);
-
-				}
-
-			}
-
-		}
-
-		result.close();
-		statement.close();
-		con.close();
-		*/
 	}
 
 
@@ -364,9 +321,10 @@ public class Database {
 
 					Player playerObj = Bukkit.getServer().getPlayer(name);
 					if (playerObj != null) {
-						playerObj.sendMessage(PurchasePermissions.chatPrefix + " Your " + ChatColor.GREEN + permission + ChatColor.WHITE
-							+ " permission has expired.");
+						playerObj.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", permission));
 					}
+					
+					
 					log.info(PurchasePermissions.chatPrefix + "Removing " + name + "'s " + permission + ".");
 
 					// pb.unloadPlayerPermissions(name);
