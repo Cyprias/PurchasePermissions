@@ -1,6 +1,6 @@
 name: PurchasePermissions
 main: com.cyprias.purchasepermissions.PurchasePermissions
-version: 0.1.1
+version: 0.1.2
 
 commands:
     pp:
@@ -22,4 +22,6 @@ permissions:
     purchasepermissions.remove:
         description: Allows you to remove a permission.
         default: op
-        
+    purchasepermissions.buy.*:
+        description: Allows you to buy a permission.
+        default: op

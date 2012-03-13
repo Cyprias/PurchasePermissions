@@ -211,6 +211,28 @@ public class PurchasePermissions extends JavaPlugin {
 		}
 	}
 
+
+	public boolean canBuyPermission(CommandSender sender, String permName) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player) sender;
+		if (player.isOp()) {
+			return true;
+		}
+		
+		String node = "purchasepermissions.buy." + permName;
+		//log.info("node: " + node);
+		//log.info("isPermissionSet: " + player.isPermissionSet(node));
+		//log.info("hasPermission: " + player.hasPermission(node));
+		
+		if (player.isPermissionSet(node)){
+			return player.hasPermission(node);
+		}
+		
+		return player.hasPermission("purchasepermissions.buy.*");
+	}
+
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = null;
 
@@ -249,7 +271,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Set<String> permissions = config.getPermissions();
 
-				sender.sendMessage(chatPrefix+L("stAvailablePermissions"));
+				sender.sendMessage(chatPrefix + L("stAvailablePermissions"));
 
 				Config.permissionInfo info;
 
@@ -282,7 +304,11 @@ public class PurchasePermissions extends JavaPlugin {
 						ChatColor msgColour = ChatColor.GRAY;
 
 						if (player != null) {
-							if (playerHasPermissions(player, info.node)) {
+
+							if (config.useBuyPermission == true && !canBuyPermission(sender, info.name)){
+								
+								msgColour = ChatColor.BLACK;
+							}else if (playerHasPermissions(player, info.node)) {
 								// node = ChatColor.DARK_GRAY + info.name;
 								// price = ChatColor.DARK_GRAY +
 								// "$"+Integer.toString(info.price);
@@ -324,7 +350,7 @@ public class PurchasePermissions extends JavaPlugin {
 					info = Config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						sender.sendMessage(chatPrefix+F("stPermissionInfo", args[1]));
+						sender.sendMessage(chatPrefix + F("stPermissionInfo", args[1]));
 						sender.sendMessage(F("stPermissionInfoNode", info.node));
 						if (info.command != null)
 							sender.sendMessage(F("stPermissionInfoCommand", info.command));
@@ -346,7 +372,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 						if (info.world != null)
 							sender.sendMessage(F("stPermissionInfoWorld", info.world));
-						
+
 						// sender.sendMessage("  You have permission: " +
 						// database.isPermissionActive(player.getName().toString(),
 						// args[1].toString()));
@@ -482,7 +508,12 @@ public class PurchasePermissions extends JavaPlugin {
 
 						if (database.isPermissionActive(player.getName(), args[1].toString())) {
 
-							sender.sendMessage(L("stAlreadyOwnPerm"));
+							sender.sendMessage(chatPrefix + F("stAlreadyOwnPerm", args[1].toString()));
+							return true;
+						}
+
+						if (config.useBuyPermission == true && !canBuyPermission(sender, info.name)){
+							sender.sendMessage(chatPrefix + F("stBuyNotPermitted",args[1].toString()));
 							return true;
 						}
 
@@ -569,17 +600,15 @@ public class PurchasePermissions extends JavaPlugin {
 		return localization.L.get(key);
 	}
 
-	
-	
 	public String F(String key, Object... args) {
 		String value = localization.L.get(key).toString();
 		try {
 			if (value != null || args != null)
-				value = String.format(value, args); //arg.toString()
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				value = String.format(value, args); // arg.toString()
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return value;
 	}
 
@@ -638,24 +667,24 @@ public class PurchasePermissions extends JavaPlugin {
 		text = text.replace("\r\n", " ").replace("\n", " ");
 		return text.trim();
 	}
-	
-	public String secondsToString(long totalSeconds){
-		
+
+	public String secondsToString(long totalSeconds) {
+
 		long days = totalSeconds / 86400;
 		long remainder = totalSeconds % 86400;
-		
+
 		long hours = remainder / 3600;
 		remainder = totalSeconds % 3600;
 		long minutes = remainder / 60;
 		long seconds = remainder % 60;
-		
+
 		if (days > 0)
 			return days + "d" + hours + "h" + minutes + "m" + seconds + "s";
 		else if (hours > 0)
 			return hours + "h" + minutes + "m" + seconds + "s";
 		else if (minutes > 0)
 			return minutes + "m" + seconds + "s";
-		else 
+		else
 			return seconds + "s";
 	}
 }

@@ -9,3 +9,4 @@ mysql:
 notifyPurchase: group.advisor
 locale: enUS
 autoLoadDefaultLocales: true
+useBuyPermission: false

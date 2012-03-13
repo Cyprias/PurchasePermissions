@@ -17,8 +17,6 @@ import com.cyprias.purchasepermissions.PurchasePermissions;
 public class Config extends JavaPlugin {
 	private PurchasePermissions plugin;
 
-
-	
 	private static final boolean String = false;
 	// public static String adminGroupPermission;
 	// public static String leadershipGroupPermission;
@@ -30,16 +28,18 @@ public class Config extends JavaPlugin {
 
 	public static String locale;
 	public static boolean autoLoadDefaultLocales;
-	
+
 	private static Configuration config;
 	static Logger log = Logger.getLogger("Minecraft");
 	private static List<String> list;
 
 	public static String notifyPurchase;
-	
+
+	public boolean useBuyPermission;
+
 	public Config(PurchasePermissions plugin) {
 		this.plugin = plugin;
-		
+
 		config = plugin.getConfig().getRoot();
 		config.options().copyDefaults(true);
 		// config.set("version", plugin.version);
@@ -50,27 +50,29 @@ public class Config extends JavaPlugin {
 		DbUrl = "jdbc:mysql://" + config.getString("mysql.hostname") + ":" + config.getInt("mysql.port") + "/" + config.getString("mysql.database");
 		DbDatabase = config.getString("mysql.database");
 		DbTable = config.getString("mysql.table");
-		
+
 		notifyPurchase = config.getString("notifyPurchase");
-		
+
+		useBuyPermission = config.getBoolean("useBuyPermission");
+
 		locale = config.getString("locale");
 		autoLoadDefaultLocales = config.getBoolean("autoLoadDefaultLocales");
-
 
 	}
 
 	private String L(String key) {
 		return plugin.L(key);
 	}
+
 	public String F(String key, Object... args) {
 		return plugin.F(key, args);
 	}
-	
-	public boolean permissionExists(String pName){
+
+	public boolean permissionExists(String pName) {
 		return (config.getConfigurationSection("permissions." + pName) != null);
 	}
-	
-	public boolean createPermission(Player sender, String permissionName){
+
+	public boolean createPermission(Player sender, String permissionName) {
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionAlreadyExists", permissionName));
 			return false;
@@ -79,35 +81,33 @@ public class Config extends JavaPlugin {
 		plugin.saveConfig();
 		return true;
 	}
-	
 
-	
-	public boolean modifyPermissionSetting(Player sender, String oName, String oSetting, String oValue){
+	public boolean modifyPermissionSetting(Player sender, String oName, String oSetting, String oValue) {
 		if (config.getConfigurationSection("permissions." + oName) == null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", oName));
 			return false;
 		}
 
 		ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(oName.toLowerCase());
-		
+
 		groupSection.set(oSetting.toLowerCase(), oValue);
 
 		plugin.saveConfig();
 		return true;
 	}
-	
-	public boolean removePermission(Player sender, String permName){
+
+	public boolean removePermission(Player sender, String permName) {
 		if (config.getConfigurationSection("permissions." + permName) == null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", permName));
 			return false;
 		}
-		
+
 		config.getConfigurationSection("permissions").set(permName, null);
 		plugin.saveConfig();
-		
+
 		return true;
 	}
-	
+
 	public Set<String> getPermissions() {
 		return config.getConfigurationSection("permissions").getKeys(false);
 	}
@@ -122,76 +122,73 @@ public class Config extends JavaPlugin {
 		int uses;
 	}
 
-	public static void testList(){
-		
+	public static void testList() {
+
 		permissionInfo myReturner = new permissionInfo();
 
-		//log.info("testList 1");
-		
+		// log.info("testList 1");
+
 		Set<String> permissions = config.getConfigurationSection("permissions").getKeys(false);
-		//log.info("testList 2");
+		// log.info("testList 2");
 		for (String permissionName : permissions) {
-			//log.info("testList 3");
+			// log.info("testList 3");
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			//log.info("testList 4");
-			
-			
-			log.info(permissionName + ". isList: " + groupSection.isList("node") );
-			log.info(permissionName + ". isString: " + groupSection.isString("node") );
-			
+			// log.info("testList 4");
+
+			log.info(permissionName + ". isList: " + groupSection.isList("node"));
+			log.info(permissionName + ". isString: " + groupSection.isString("node"));
+
 			/*
-			List<String> nodes = groupSection.getStringList("node");
-			//log.info("testList 5");
-			for (String nodeName : nodes) {
-				
-				log.info(permissionName + " " + nodeName);
-				
-			}
-			*/
+			 * List<String> nodes = groupSection.getStringList("node");
+			 * //log.info("testList 5"); for (String nodeName : nodes) {
+			 * 
+			 * log.info(permissionName + " " + nodeName);
+			 * 
+			 * }
+			 */
 		}
-			
-			
-			
-			//ConfigurationSection groupSection = config.getConfigurationSection("permissions." + permissionName).getConfigurationSection("node");
-			//List<String> groupPlayers = groupSection.getList("players");
-			
-			//myReturner.node = (List<String[]>) permissions2.get("node");
-			
+
+		// ConfigurationSection groupSection =
+		// config.getConfigurationSection("permissions." +
+		// permissionName).getConfigurationSection("node");
+		// List<String> groupPlayers = groupSection.getList("players");
+
+		// myReturner.node = (List<String[]>) permissions2.get("node");
+
 	}
 
-	public permissionInfo isValidCommand(String message) throws Exception{
+	public permissionInfo isValidCommand(String message) throws Exception {
 		Set<String> permissions = getPermissions();
-		
-		//Config.permissionInfo info;
-		//boolean found=false;
+
+		// Config.permissionInfo info;
+		// boolean found=false;
 		for (Object o : permissions) {
 			String command = plugin.config.getPermisionCommand(o.toString());
-			
-			
+
 			if (command != null && message.toLowerCase().contains(command.toLowerCase())) {
 				return getPermissionInfo(o.toString());
-				//return o.toString();
+				// return o.toString();
 			}
-			
-			
-			//for (String permissionName : info.node) {
-			//	log.info(info + permissionName);
-			//	
-			//	
-			//	
-			//}
-			
+
+			// for (String permissionName : info.node) {
+			// log.info(info + permissionName);
+			//
+			//
+			//
+			// }
+
 		}
-		
+
 		return null;
 	}
-	
-	public boolean canUsePermissionInWorld(Player player, String permissionName){
+
+	public boolean canUsePermissionInWorld(Player player, String permissionName) {
 		String aWorld = player.getLocation().getWorld().getName().toString();
 
-		//log.info(plugin.chatPrefix + "canUsePermissionInWorld: 1 " + permissionName + " " + aWorld);
+		// log.info(plugin.chatPrefix + "canUsePermissionInWorld: 1 " +
+		// permissionName + " " + aWorld);
 		List<String> worlds = getPermissionWorlds(permissionName);
-		if (worlds == null){
+		if (worlds == null) {
 			return true;
 		}
 		for (String wName : worlds) {
@@ -199,46 +196,44 @@ public class Config extends JavaPlugin {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
-	public List<String> getPermissionWorlds (String permissionName){
+
+	public List<String> getPermissionWorlds(String permissionName) {
 		List<String> worlds = null;
-		
+
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 			if (groupSection.isSet("world"))
 				/**/
 				if (groupSection.isList("world")) {
 					worlds = groupSection.getStringList("world");
-				}else if (groupSection.isString("world")) {
-					
+				} else if (groupSection.isString("world")) {
+
 					worlds = new ArrayList();
-					
+
 					String sWorld = groupSection.getString("world");
-					
-					if (sWorld.contains(",")){
+
+					if (sWorld.contains(",")) {
 						String[] temp = sWorld.split(",");
-					for(int i =0; i < temp.length ; i++)
-						worlds.add(temp[i].trim());
-					}else
+						for (int i = 0; i < temp.length; i++)
+							worlds.add(temp[i].trim());
+					} else
 						worlds.add(sWorld);
 
 				}
-			
+
 		}
 		return worlds;
 	}
-	
-	
-	
+
 	public static permissionInfo getPermissionInfo(String permissionName) throws Exception {
 
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			
+
 			myReturner.name = (String) permissionName;
 			if (groupSection.isSet("command"))
 				myReturner.command = (String) groupSection.get("command");
@@ -254,80 +249,74 @@ public class Config extends JavaPlugin {
 			myReturner.uses = 0;
 			if (groupSection.isSet("uses"))
 				myReturner.uses = Integer.valueOf(groupSection.get("uses").toString());
-			
-			
+
 			if (groupSection.isSet("node"))
 				/**/
 				if (groupSection.isList("node")) {
 					myReturner.node = groupSection.getStringList("node");
-				}else if (groupSection.isString("node")) {
-					
+				} else if (groupSection.isString("node")) {
+
 					myReturner.node = new ArrayList();
-					
+
 					String sNode = groupSection.getString("node");
-					
-					if (sNode.contains(",")){
+
+					if (sNode.contains(",")) {
 						String[] temp = sNode.split(",");
-					for(int i =0; i < temp.length ; i++)
-						myReturner.node.add(temp[i].trim());
-					}else
+						for (int i = 0; i < temp.length; i++)
+							myReturner.node.add(temp[i].trim());
+					} else
 						myReturner.node.add(sNode);
 
 				}
-		
-			 	
-			
+
 			if (groupSection.isSet("world"))
 				/**/
 				if (groupSection.isList("world")) {
 					myReturner.world = groupSection.getStringList("world");
-				}else if (groupSection.isString("world")) {
-					
+				} else if (groupSection.isString("world")) {
+
 					myReturner.world = new ArrayList();
-					
+
 					String sWorld = groupSection.getString("world");
-					
-					if (sWorld.contains(",")){
+
+					if (sWorld.contains(",")) {
 						String[] temp = sWorld.split(",");
-					for(int i =0; i < temp.length ; i++)
-						myReturner.world.add(temp[i].trim());
-					}else
+						for (int i = 0; i < temp.length; i++)
+							myReturner.world.add(temp[i].trim());
+					} else
 						myReturner.world.add(sWorld);
 
 				}
-			
+
 			return myReturner;
-			
+
 		}
-		
+
 		/*
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
-			permissionInfo myReturner = new permissionInfo();
-			try {
-				Map<String, Object> permissions2 = config.getConfigurationSection("permissions." + permissionName).getValues(false);
-				myReturner.name = (String) permissionName;
-
-				myReturner.node = (List<String[]>) permissions2.get("node");
-
-				myReturner.command = (String) permissions2.get("command");
-				myReturner.price = (Integer) permissions2.get("price");
-				myReturner.duration = (Integer) permissions2.get("duration");
-				myReturner.uses = (Integer) permissions2.get("uses");
-
-				return myReturner;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		 * if (config.getConfigurationSection("permissions." + permissionName)
+		 * != null) { permissionInfo myReturner = new permissionInfo(); try {
+		 * Map<String, Object> permissions2 =
+		 * config.getConfigurationSection("permissions." +
+		 * permissionName).getValues(false); myReturner.name = (String)
+		 * permissionName;
+		 * 
+		 * myReturner.node = (List<String[]>) permissions2.get("node");
+		 * 
+		 * myReturner.command = (String) permissions2.get("command");
+		 * myReturner.price = (Integer) permissions2.get("price");
+		 * myReturner.duration = (Integer) permissions2.get("duration");
+		 * myReturner.uses = (Integer) permissions2.get("uses");
+		 * 
+		 * return myReturner; } catch (Exception e) { // TODO Auto-generated
+		 * catch block e.printStackTrace(); } }
 		 */
-		
+
 		return null;
 
 	}
 
-	public boolean isValidSetting(String oName){
-		//log.info("isValidSetting oName: " + oName);
+	public boolean isValidSetting(String oName) {
+		// log.info("isValidSetting oName: " + oName);
 
 		if (oName.equalsIgnoreCase("node"))
 			return true;
@@ -343,56 +332,55 @@ public class Config extends JavaPlugin {
 			return true;
 		else if (oName.equalsIgnoreCase("world"))
 			return true;
-		
+
 		return false;
 	}
-	
 
-	public static List getPermissionNode (String permissionName){
-		
+	public static List getPermissionNode(String permissionName) {
+
 		List node = null;
-		
+
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			
+
 			if (groupSection.isList("node")) {
 				node = groupSection.getStringList("node");
-			
-			}else if (groupSection.isString("node")) {
-				//log.info("String! " + groupSection.getString("node"));
+
+			} else if (groupSection.isString("node")) {
+				// log.info("String! " + groupSection.getString("node"));
 				node = new ArrayList();
 				node.add(groupSection.getString("node"));
 			}
-			
+
 		}
 
 		return node;
 	}
-	
-	public String getPermisionCommand (String permissionName){
-		
+
+	public String getPermisionCommand(String permissionName) {
+
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			
+
 			return groupSection.getString("command");
-			
+
 		}
-		
+
 		return null;
 	}
-	
-	public static String getPermisionPayTo (String permissionName){
-		
+
+	public static String getPermisionPayTo(String permissionName) {
+
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
 			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 			return groupSection.getString("payto");
-			
+
 		}
-		
+
 		return null;
 	}
-	
+
 }
