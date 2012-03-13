@@ -18,6 +18,7 @@ enUS:
     stPermissionInfoDuration: "  &7duration: &f%s"
     stPermissionInfoWorld: "  &7world: &f%s"
     stPermissionInfoUse: "  &7uses: &f%s"
+    stPermissionRequiresBuyPerm: "&7Requires buyer have &6purchasepermissions.buy.%s &7permission."
     stPermNoExist: "&7Permission '&f%s&7' does not exist, try again."
     stIncludeName: "&7You need to include a name."
     stPermCreated: "&f%s &7created, use &a/pp modify %s <setting> <value> &7to set it's settings."

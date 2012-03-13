@@ -335,7 +335,13 @@ public class PurchasePermissions extends JavaPlugin {
 								}
 							}
 
-							sender.sendMessage("  " + node + msgColour + uses + " " + price + duration);
+							if (info.requirebuypermission == true && canBuyPermission(sender, info)) {
+								sender.sendMessage("  " + ChatColor.GOLD + "* " + node + msgColour + uses + " " + price + duration);
+							}else{
+								sender.sendMessage("  " + node + msgColour + uses + " " + price + duration);
+							}
+							
+							
 						}
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
@@ -357,7 +363,12 @@ public class PurchasePermissions extends JavaPlugin {
 					info = Config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						sender.sendMessage(chatPrefix + F("stPermissionInfo", args[1]));
+						sender.sendMessage(chatPrefix + F("stPermissionInfo", info.name));
+						
+
+						if (info.requirebuypermission == true)
+							sender.sendMessage(F("stPermissionRequiresBuyPerm", info.name));
+
 						sender.sendMessage(F("stPermissionInfoNode", info.node));
 						if (info.command != null)
 							sender.sendMessage(F("stPermissionInfoCommand", info.command));
