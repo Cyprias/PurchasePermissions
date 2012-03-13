@@ -60,6 +60,11 @@ public class Config extends JavaPlugin {
 
 	}
 
+	public void reloadOurConfig(){
+		plugin.reloadConfig();
+		config = plugin.getConfig().getRoot();
+	}
+	
 	private String L(String key) {
 		return plugin.L(key);
 	}

@@ -1,6 +1,6 @@
 name: PurchasePermissions
 main: com.cyprias.purchasepermissions.PurchasePermissions
-version: 0.1.2
+version: 0.1.4
 
 commands:
     pp:

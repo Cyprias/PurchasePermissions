@@ -417,8 +417,12 @@ public class PurchasePermissions extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("reload")) {
 
 				if (sender.isOp()) {
-					this.reloadConfig();
+					config.reloadOurConfig();
 
+					
+					
+					
+					
 					sender.sendMessage(chatPrefix + " plugin reloaded.");
 					return true;
 				}
