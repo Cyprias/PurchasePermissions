@@ -120,6 +120,7 @@ public class Config extends JavaPlugin {
 		int price;
 		int duration;
 		int uses;
+		boolean requirebuypermission;
 	}
 
 	public static void testList() {
@@ -228,6 +229,8 @@ public class Config extends JavaPlugin {
 		return worlds;
 	}
 
+	
+	
 	public static permissionInfo getPermissionInfo(String permissionName) throws Exception {
 
 		if (config.getConfigurationSection("permissions." + permissionName) != null) {
@@ -288,6 +291,14 @@ public class Config extends JavaPlugin {
 
 				}
 
+			myReturner.requirebuypermission = false;
+			if (groupSection.isSet("requirebuypermission"))
+				myReturner.requirebuypermission = Boolean.valueOf(groupSection.get("requirebuypermission").toString());
+			
+			
+			
+			
+			
 			return myReturner;
 
 		}
@@ -332,7 +343,9 @@ public class Config extends JavaPlugin {
 			return true;
 		else if (oName.equalsIgnoreCase("world"))
 			return true;
-
+		else if (oName.equalsIgnoreCase("requirebuypermission"))
+			return true;
+		
 		return false;
 	}
 

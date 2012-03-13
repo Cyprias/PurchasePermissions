@@ -211,8 +211,7 @@ public class PurchasePermissions extends JavaPlugin {
 		}
 	}
 
-
-	public boolean canBuyPermission(CommandSender sender, String permName) {
+	public boolean canBuyPermission(CommandSender sender, Config.permissionInfo info) {
 		if (!(sender instanceof Player)) {
 			return true;
 		}
@@ -220,17 +219,26 @@ public class PurchasePermissions extends JavaPlugin {
 		if (player.isOp()) {
 			return true;
 		}
-		
-		String node = "purchasepermissions.buy." + permName;
-		//log.info("node: " + node);
-		//log.info("isPermissionSet: " + player.isPermissionSet(node));
-		//log.info("hasPermission: " + player.hasPermission(node));
-		
-		if (player.isPermissionSet(node)){
+
+		//log.info("canBuyPermission  info.name: " + info.name);
+		//log.info("canBuyPermission  config.useBuyPermission: " + config.useBuyPermission);
+		//log.info("canBuyPermission  info.requirebuypermission: " + info.requirebuypermission);
+
+		if (config.useBuyPermission == false && info.requirebuypermission == false) {
+			// no buy permission required to buy this permission.
+			return true;
+		}
+
+		String node = "purchasepermissions.buy." + info.name;
+		// log.info("node: " + node);
+		// log.info("isPermissionSet: " + player.isPermissionSet(node));
+		// log.info("hasPermission: " + player.hasPermission(node));
+
+		if (player.isPermissionSet(node)) {
 			return player.hasPermission(node);
 		}
-		
-		return player.hasPermission("purchasepermissions.buy.*");
+
+		return (info.requirebuypermission == false && player.hasPermission("purchasepermissions.buy.*"));
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -284,52 +292,51 @@ public class PurchasePermissions extends JavaPlugin {
 
 						String node = ChatColor.WHITE + info.name;
 
-						String price = "$" + Integer.toString(info.price);
+						if (canBuyPermission(sender, info)) {
 
-						String duration = "";
+							String price = "$" + Integer.toString(info.price);
 
-						if (info.duration > 0) {
-							duration = " " + database.secondsToString(info.duration * 60);
-						}
+							String duration = "";
 
-						String uses = "";
-						if (info.uses > 0) {
-							uses = " x" + info.uses;
-						}
-
-						// if (sender.hasPermission(info.node)) {
-						// node = ChatColor.GRAY + info.name;
-						// }
-
-						ChatColor msgColour = ChatColor.GRAY;
-
-						if (player != null) {
-
-							if (config.useBuyPermission == true && !canBuyPermission(sender, info.name)){
-								
-								msgColour = ChatColor.BLACK;
-							}else if (playerHasPermissions(player, info.node)) {
-								// node = ChatColor.DARK_GRAY + info.name;
-								// price = ChatColor.DARK_GRAY +
-								// "$"+Integer.toString(info.price);
-
-								msgColour = ChatColor.DARK_GRAY;
-							} else if (getBalance(sender.getName()) >= info.price) {
-
-								// node = ChatColor.GREEN + info.name;
-								// price = ChatColor.GREEN +
-								// "$"+Integer.toString(info.price);
-								msgColour = ChatColor.GREEN;
-							} else if (getBalance(sender.getName()) < info.price) {
-								// node = ChatColor.RED + info.name;
-								// price = ChatColor.RED +
-								// "$"+Integer.toString(info.price);
-								msgColour = ChatColor.RED;
+							if (info.duration > 0) {
+								duration = " " + database.secondsToString(info.duration * 60);
 							}
+
+							String uses = "";
+							if (info.uses > 0) {
+								uses = " x" + info.uses;
+							}
+
+							// if (sender.hasPermission(info.node)) {
+							// node = ChatColor.GRAY + info.name;
+							// }
+
+							ChatColor msgColour = ChatColor.GRAY;
+
+							if (player != null) {
+
+								if (playerHasPermissions(player, info.node)) {
+									// node = ChatColor.DARK_GRAY + info.name;
+									// price = ChatColor.DARK_GRAY +
+									// "$"+Integer.toString(info.price);
+
+									msgColour = ChatColor.DARK_GRAY;
+								} else if (getBalance(sender.getName()) >= info.price) {
+
+									// node = ChatColor.GREEN + info.name;
+									// price = ChatColor.GREEN +
+									// "$"+Integer.toString(info.price);
+									msgColour = ChatColor.GREEN;
+								} else if (getBalance(sender.getName()) < info.price) {
+									// node = ChatColor.RED + info.name;
+									// price = ChatColor.RED +
+									// "$"+Integer.toString(info.price);
+									msgColour = ChatColor.RED;
+								}
+							}
+
+							sender.sendMessage("  " + node + msgColour + uses + " " + price + duration);
 						}
-
-						sender.sendMessage("  " + node + msgColour + uses + " " + price + duration);
-
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -341,7 +348,7 @@ public class PurchasePermissions extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("info")) {
 				if (args.length == 1) {
 
-					sender.sendMessage(L("stIncludePermissionName"));
+					sender.sendMessage(chatPrefix + L("stIncludePermissionName"));
 					return true;
 				}
 
@@ -497,7 +504,7 @@ public class PurchasePermissions extends JavaPlugin {
 			} else if (args[0].equalsIgnoreCase("buy")) {
 				if (args.length == 1) {
 
-					sender.sendMessage(L("stIncludePermName"));
+					sender.sendMessage(L("stIncludePermissionName"));
 					return true;
 				}
 
@@ -512,8 +519,11 @@ public class PurchasePermissions extends JavaPlugin {
 							return true;
 						}
 
-						if (config.useBuyPermission == true && !canBuyPermission(sender, info.name)){
-							sender.sendMessage(chatPrefix + F("stBuyNotPermitted",args[1].toString()));
+						// if ((info.requirebuypermission == true ||
+						// config.useBuyPermission == true) &&
+						// !canBuyPermission(sender, info)){
+						if (!canBuyPermission(sender, info)) {
+							sender.sendMessage(chatPrefix + F("stBuyNotPermitted", args[1].toString()));
 							return true;
 						}
 
