@@ -47,3 +47,4 @@ enUS:
     stPermissionExpired: "&7Your &f%s &7access has expired."
     stPermissionAlreadyExists: "&f%s &7already exists."
     stBuyNotPermitted: "&7You're not permitted to buy the &f%s &7permission."
+    stUnlimited: "Unlimited"

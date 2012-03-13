@@ -378,14 +378,14 @@ public class PurchasePermissions extends JavaPlugin {
 							sender.sendMessage(F("stPermissionInfoDuration", database.secondsToString(info.duration * 60)));
 
 						} else {
-							sender.sendMessage(F("stPermissionInfoDuration", "Unlimited"));
+							sender.sendMessage(F("stPermissionInfoDuration", L("Unlimited")));
 						}
 
 						if (info.uses > 0) {
 							sender.sendMessage(F("stPermissionInfoUse", info.uses));
 
 						} else {
-							sender.sendMessage(F("stPermissionInfoUse", "Unlimited"));
+							sender.sendMessage(F("stPermissionInfoUse", L("Unlimited")));
 						}
 
 						if (info.world != null)
