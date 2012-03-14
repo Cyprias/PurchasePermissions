@@ -54,16 +54,32 @@ public class PurchasePermissions extends JavaPlugin {
 
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 
+	public void onInitialized(){
+		
+		log.info("[PP] onInitialized");
+	}
+	public void onInitialize(){
+		
+		log.info("[PP] onInitialize");
+	}
+	
 	public void onEnable() {
 		server = getServer();
 		name = this.getDescription().getName();
 		version = this.getDescription().getVersion();
 
+		
 		// Load config and permissions
 		config = new Config(this);
 		database = new Database(this);
 		playerListener = new PlayerListener(this);
 		localization = new Localization(this);
+		
+		if (database.testDBConnection() == false){
+			log.severe("[PP] Failed to connect to MySQL database, shutting down...");
+			this.getPluginLoader().disablePlugin(this);
+			return;
+		}
 		// L=localization.L;
 
 		// Register stuff
@@ -279,6 +295,12 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Set<String> permissions = config.getPermissions();
 
+				if (permissions == null){
+					sender.sendMessage(chatPrefix + L("stCannotLoadPermissionsFile"));
+					return true;
+				}
+				
+				
 				sender.sendMessage(chatPrefix + L("stAvailablePermissions"));
 
 				Config.permissionInfo info;
@@ -612,7 +634,7 @@ public class PurchasePermissions extends JavaPlugin {
 				// sender.sendMessage(L("testMsg"));
 
 				// L.testLocales();
-
+				database.testDBConnection();
 				return true;
 			}
 

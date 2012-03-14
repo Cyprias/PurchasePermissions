@@ -122,7 +122,7 @@ public class Localization {
 			reloadLocalesFile();
 		}
 
-		log.info("loadLocales locale: " + Config.locale);
+		//log.info("loadLocales locale: " + Config.locale);
 
 		String value;
 		for (String key : locales.getConfigurationSection(Config.locale).getKeys(false)) {

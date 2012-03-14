@@ -68,6 +68,16 @@ public class Database {
 		con.close();
 	}
 
+	public boolean testDBConnection(){
+		try {
+			Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
+			con.close();
+			return true;
+		} catch (SQLException e) {}
+		return false;
+	}
+	
+	
 	public void removeActivePermissions(String playerName) throws SQLException {
 
 		String SQL = "SELECT * FROM `" + Config.DbTable + "` WHERE `player` = '" + playerName + "'";

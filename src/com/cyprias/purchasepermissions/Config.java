@@ -130,7 +130,10 @@ public class Config extends JavaPlugin {
 	}
 
 	public Set<String> getPermissions() {
-		return permissions.getConfigurationSection("permissions").getKeys(false);
+		if (permissions.isSet("permissions"))
+			return permissions.getConfigurationSection("permissions").getKeys(false);
+		
+		return null;
 	}
 
 	public static class permissionInfo {

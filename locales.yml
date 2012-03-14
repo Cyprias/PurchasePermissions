@@ -48,3 +48,5 @@ enUS:
     stPermissionAlreadyExists: "&f%s &7already exists."
     stBuyNotPermitted: "&7You're not permitted to buy the &f%s &7permission."
     stUnlimited: "Unlimited"
+    stCannotLoadPermissionsFile: "&7Failed to load the permissions.yml file, Please inform an administrator."
+    stCannotConnectToDB: "Failed to connect to the database, Please inform an administrator"
