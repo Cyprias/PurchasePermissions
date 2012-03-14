@@ -124,9 +124,11 @@ class PlayerListener implements Listener {
 		}
 	}
 
-	public static void addPermission(String pName, String permissionName) {
+	public void addPermission(String pName, String permissionName) {
 		//if (PurchasePermissions.permissions.containsKey(pName)) {
-			List<String> nodes = Config.getPermissionNode(permissionName);
+			List<String> nodes = plugin.config.getPermissionNode(permissionName);
+			
+			
 			// log.info("Player addPermission 3");
 			if (nodes != null) {
 				// log.info("Player addPermission 4");
@@ -149,9 +151,9 @@ class PlayerListener implements Listener {
 		//}
 	}
 
-	public static void removePermission(String pName, String permissionName) {
+	public void removePermission(String pName, String permissionName) {
 		//if (PurchasePermissions.permissions.containsKey(pName)) {
-			List<String> nodes = Config.getPermissionNode(permissionName);
+			List<String> nodes = plugin.config.getPermissionNode(permissionName);
 			// log.info("Player addPermission 3");
 			if (nodes != null) {
 

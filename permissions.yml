@@ -1,0 +1,48 @@
+permissions:
+  time:
+    node:
+    - essentials.time
+    - essentials.time.set
+    command: /time
+    price: 100
+    duration: '200'
+    uses: 1
+    world: world
+  weather:
+    node: essentials.weather
+    command: /weather
+    price: 100
+    duration: 0
+    uses: 1
+  dtools:
+    node: essentials.kit.dtools
+    command: /kit dtools
+    price: 200
+    duration: 0
+    uses: 1
+  diamondzone:
+    node: group.diamondusers
+    price: 10
+    duration: 1
+    uses: 0
+    payto: Cyprias
+  heal:
+    node: essentials.heal
+    command: /heal
+    price: 20
+    duration: 0
+    uses: '1'
+  god:
+    node: essentials.god
+    command: /god
+    price: 1000
+    duration: 1440
+    uses: 0
+  test: {}
+  freegod:
+    node: essentials.god
+    command: /god
+    price: 0
+    duration: '1440'
+    uses: 0
+    requirebuypermission: true

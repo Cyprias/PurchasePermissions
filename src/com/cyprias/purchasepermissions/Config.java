@@ -1,5 +1,9 @@
 package com.cyprias.purchasepermissions;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +13,8 @@ import java.util.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,9 +43,16 @@ public class Config extends JavaPlugin {
 
 	public boolean useBuyPermission;
 
+	
+	//File configFile = null;
 	public Config(PurchasePermissions plugin) {
 		this.plugin = plugin;
 
+		//configFile = new File(plugin.getDataFolder(), "config.yml");
+		//if (!configFile.exists()) {
+			//log.info("CONFIG DOESN'T EXIST!");
+		//}
+		
 		config = plugin.getConfig().getRoot();
 		config.options().copyDefaults(true);
 		// config.set("version", plugin.version);
@@ -58,6 +71,8 @@ public class Config extends JavaPlugin {
 		locale = config.getString("locale");
 		autoLoadDefaultLocales = config.getBoolean("autoLoadDefaultLocales");
 
+		loadPermissionsFile();
+		
 	}
 
 	public void reloadOurConfig(){
@@ -74,26 +89,27 @@ public class Config extends JavaPlugin {
 	}
 
 	public boolean permissionExists(String pName) {
-		return (config.getConfigurationSection("permissions." + pName) != null);
+		return (permissions.getConfigurationSection("permissions." + pName) != null);
 	}
 
 	public boolean createPermission(Player sender, String permissionName) {
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionAlreadyExists", permissionName));
 			return false;
 		}
-		config.getConfigurationSection("permissions").createSection(permissionName);
+		permissions.getConfigurationSection("permissions").createSection(permissionName);
+		
 		plugin.saveConfig();
 		return true;
 	}
 
 	public boolean modifyPermissionSetting(Player sender, String oName, String oSetting, String oValue) {
-		if (config.getConfigurationSection("permissions." + oName) == null) {
+		if (permissions.getConfigurationSection("permissions." + oName) == null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", oName));
 			return false;
 		}
 
-		ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(oName.toLowerCase());
+		ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(oName.toLowerCase());
 
 		groupSection.set(oSetting.toLowerCase(), oValue);
 
@@ -102,19 +118,19 @@ public class Config extends JavaPlugin {
 	}
 
 	public boolean removePermission(Player sender, String permName) {
-		if (config.getConfigurationSection("permissions." + permName) == null) {
+		if (permissions.getConfigurationSection("permissions." + permName) == null) {
 			sender.sendMessage(PurchasePermissions.chatPrefix + F("stPermNoExist", permName));
 			return false;
 		}
 
-		config.getConfigurationSection("permissions").set(permName, null);
+		permissions.getConfigurationSection("permissions").set(permName, null);
 		plugin.saveConfig();
 
 		return true;
 	}
 
 	public Set<String> getPermissions() {
-		return config.getConfigurationSection("permissions").getKeys(false);
+		return permissions.getConfigurationSection("permissions").getKeys(false);
 	}
 
 	public static class permissionInfo {
@@ -128,40 +144,6 @@ public class Config extends JavaPlugin {
 		boolean requirebuypermission;
 	}
 
-	public static void testList() {
-
-		permissionInfo myReturner = new permissionInfo();
-
-		// log.info("testList 1");
-
-		Set<String> permissions = config.getConfigurationSection("permissions").getKeys(false);
-		// log.info("testList 2");
-		for (String permissionName : permissions) {
-			// log.info("testList 3");
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
-			// log.info("testList 4");
-
-			log.info(permissionName + ". isList: " + groupSection.isList("node"));
-			log.info(permissionName + ". isString: " + groupSection.isString("node"));
-
-			/*
-			 * List<String> nodes = groupSection.getStringList("node");
-			 * //log.info("testList 5"); for (String nodeName : nodes) {
-			 * 
-			 * log.info(permissionName + " " + nodeName);
-			 * 
-			 * }
-			 */
-		}
-
-		// ConfigurationSection groupSection =
-		// config.getConfigurationSection("permissions." +
-		// permissionName).getConfigurationSection("node");
-		// List<String> groupPlayers = groupSection.getList("players");
-
-		// myReturner.node = (List<String[]>) permissions2.get("node");
-
-	}
 
 	public permissionInfo isValidCommand(String message) throws Exception {
 		Set<String> permissions = getPermissions();
@@ -209,8 +191,8 @@ public class Config extends JavaPlugin {
 	public List<String> getPermissionWorlds(String permissionName) {
 		List<String> worlds = null;
 
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
+			ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 			if (groupSection.isSet("world"))
 				/**/
 				if (groupSection.isList("world")) {
@@ -236,11 +218,11 @@ public class Config extends JavaPlugin {
 
 	
 	
-	public static permissionInfo getPermissionInfo(String permissionName) throws Exception {
+	public permissionInfo getPermissionInfo(String permissionName) throws Exception {
 
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+			ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 
 			myReturner.name = (String) permissionName;
 			if (groupSection.isSet("command"))
@@ -309,10 +291,10 @@ public class Config extends JavaPlugin {
 		}
 
 		/*
-		 * if (config.getConfigurationSection("permissions." + permissionName)
+		 * if (permissions.getConfigurationSection("permissions." + permissionName)
 		 * != null) { permissionInfo myReturner = new permissionInfo(); try {
 		 * Map<String, Object> permissions2 =
-		 * config.getConfigurationSection("permissions." +
+		 * permissions.getConfigurationSection("permissions." +
 		 * permissionName).getValues(false); myReturner.name = (String)
 		 * permissionName;
 		 * 
@@ -354,13 +336,13 @@ public class Config extends JavaPlugin {
 		return false;
 	}
 
-	public static List getPermissionNode(String permissionName) {
+	public List getPermissionNode(String permissionName) {
 
 		List node = null;
 
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+			ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 
 			if (groupSection.isList("node")) {
 				node = groupSection.getStringList("node");
@@ -378,9 +360,9 @@ public class Config extends JavaPlugin {
 
 	public String getPermisionCommand(String permissionName) {
 
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+			ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 
 			return groupSection.getString("command");
 
@@ -389,11 +371,11 @@ public class Config extends JavaPlugin {
 		return null;
 	}
 
-	public static String getPermisionPayTo(String permissionName) {
-
-		if (config.getConfigurationSection("permissions." + permissionName) != null) {
+	public String getPermisionPayTo(String permissionName) {
+		
+		if (permissions.getConfigurationSection("permissions." + permissionName) != null) {
 			permissionInfo myReturner = new permissionInfo();
-			ConfigurationSection groupSection = config.getConfigurationSection("permissions").getConfigurationSection(permissionName);
+			ConfigurationSection groupSection = permissions.getConfigurationSection("permissions").getConfigurationSection(permissionName);
 			return groupSection.getString("payto");
 
 		}
@@ -401,4 +383,49 @@ public class Config extends JavaPlugin {
 		return null;
 	}
 
+	
+	File permissionsFile = null;
+	FileConfiguration permissions = new YamlConfiguration();
+	public void loadPermissionsFile() {
+		if (permissionsFile == null) {
+			reloadPermissionsFile();
+		}
+
+		
+		
+		
+	}
+	
+	private void reloadPermissionsFile() {
+		try {
+			permissionsFile = new File(plugin.getDataFolder(), "permissions.yml");
+
+			// Check if file exists in plugin dir, or create it.
+			if (!permissionsFile.exists()) {
+				permissionsFile.getParentFile().mkdirs();
+				copy(plugin.getResource("permissions.yml"), permissionsFile);
+
+			}
+
+			permissions.load(permissionsFile);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void copy(InputStream in, File file) {
+		try {
+			OutputStream out = new FileOutputStream(file);
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			out.close();
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

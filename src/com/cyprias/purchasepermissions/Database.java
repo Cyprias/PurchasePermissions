@@ -58,7 +58,7 @@ public class Database {
 		while (result.next()) {
 			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
 				if (plugin.config.canUsePermissionInWorld(player, result.getString(col_permission)) == true) {
-					PlayerListener.addPermission(result.getString(col_player), result.getString(col_permission));
+					plugin.playerListener.addPermission(result.getString(col_player), result.getString(col_permission));
 				}
 				
 			}
@@ -81,7 +81,7 @@ public class Database {
 		// log.info("retrieveActivePermissions: 2");
 		while (result.next()) {
 			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
-				PlayerListener.removePermission(result.getString(col_player), result.getString(col_permission));
+				plugin.playerListener.removePermission(result.getString(col_player), result.getString(col_permission));
 			}
 		}
 
@@ -241,8 +241,11 @@ public class Database {
 				if (removePermissionFromDB(pID)) {
 					Player user = PurchasePermissions.server.getPlayer(playerName);
 
-					PlayerListener.removePermission(playerName, pInfo.name);
+					plugin.playerListener.removePermission(playerName, pInfo.name);
 
+					
+					
+					
 					if (user != null) {
 						user.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", pInfo.name));
 						
@@ -332,7 +335,7 @@ public class Database {
 
 					removePermissionFromDB(result.getInt(col_id));
 
-					PlayerListener.removePermission(name, permission);
+					plugin.playerListener.removePermission(name, permission);
 
 					// pb.loadPlayerPermissions(name);
 					// retrieveActivePermissions(name);

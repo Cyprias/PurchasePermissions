@@ -288,7 +288,7 @@ public class PurchasePermissions extends JavaPlugin {
 					// sender.sendMessage("  " + e);
 
 					try {
-						info = Config.getPermissionInfo(e);
+						info = this.config.getPermissionInfo(e);
 
 						String node = ChatColor.WHITE + info.name;
 
@@ -360,7 +360,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Config.permissionInfo info;
 				try {
-					info = Config.getPermissionInfo(args[1]);
+					info = this.config.getPermissionInfo(args[1]);
 					if (info != null) {
 
 						sender.sendMessage(chatPrefix + F("stPermissionInfo", info.name));
@@ -525,7 +525,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Config.permissionInfo info;
 				try {
-					info = Config.getPermissionInfo(args[1]);
+					info = this.config.getPermissionInfo(args[1]);
 					if (info != null) {
 
 						if (database.isPermissionActive(player.getName(), args[1].toString())) {
@@ -556,7 +556,7 @@ public class PurchasePermissions extends JavaPlugin {
 							if (database.addPlayer(target, info)) {
 								econ.withdrawPlayer(sender.getName(), info.price);
 
-								String payTo = Config.getPermisionPayTo(info.name);
+								String payTo = this.config.getPermisionPayTo(info.name);
 
 								// log.info("payto: " + payTo);
 								if (payTo != null) {
