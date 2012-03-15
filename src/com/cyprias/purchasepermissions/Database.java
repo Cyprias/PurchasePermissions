@@ -18,7 +18,6 @@ import org.bukkit.plugin.Plugin;
 public class Database {
 
 	private static String chatPrefix = "§f[§aPP§f] ";
-	private String stCannotUsePermInWorld = chatPrefix+"§7You cannot use §f%s §7in that world.";
 	
 	
 	static int col_id = 1;
@@ -222,7 +221,7 @@ public class Database {
 		if (isPermissionActive(player.getName(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
 			
 			if (! plugin.playerHasPermissions(player, pInfo.node)) {//Make sure other permission plugins don't either before notifying user.
-				player.sendMessage(stCannotUsePermInWorld.format(stCannotUsePermInWorld, pInfo.name));
+				player.sendMessage(chatPrefix + F("stCannotUsePermInWorld", pInfo.name));
 			}
 			return;
 		}

@@ -54,14 +54,6 @@ public class PurchasePermissions extends JavaPlugin {
 
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 
-	public void onInitialized(){
-		
-		log.info("[PP] onInitialized");
-	}
-	public void onInitialize(){
-		
-		log.info("[PP] onInitialize");
-	}
 	
 	public void onEnable() {
 		server = getServer();

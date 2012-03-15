@@ -30,8 +30,6 @@ class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		// log.info("Player " + event.getPlayer().getName() +
-		// " quit, unregistering...");
 		plugin.unregisterPlayer(event.getPlayer());
 
 	}
@@ -40,22 +38,13 @@ class PlayerListener implements Listener {
 	public void onPlayerKick(PlayerKickEvent event) {
 		if (event.isCancelled())
 			return;
-		// log.info("Player " + event.getPlayer().getName() +
-		// " was kicked, unregistering...");
 		plugin.unregisterPlayer(event.getPlayer());
 
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLogin(PlayerJoinEvent event) {
-		// log.info("Player " + event.getPlayer().getName() +
-		// " joined, registering...");
 		plugin.registerPlayer(event.getPlayer());
-		// pb.loadPlayerPermissions(event.getPlayer().getName());
-		// log.info("Player " + event.getPlayer().getName() +
-		// " joined, registering... 2");
-
-		// addPermission(event.getPlayer().getName(), "time");
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -73,23 +62,12 @@ class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		// log.info("onPlayerCommand " + event.getPlayer().getName() + " - " +
-		// event.getMessage().toString()) ;
-		// log.info("getName " + event.getPlayer().getName());
-		// log.info("getMessage " + event.getMessage());
-		// log.info("toString " + event.getMessage().toString());
-
 		commandInfo newCmd = new commandInfo();
 
 		newCmd.player = event.getPlayer();
 		newCmd.message = event.getMessage().toString();
 
-		// log.info("size 1 " + usedCommands.size());
-
-		
-		
 		usedCommands.add(newCmd);
-		// log.info("size 2 " + usedCommands.size());
 
 		try {
 
@@ -115,9 +93,6 @@ class PlayerListener implements Listener {
 				}
 			}, 0L);
 
-			// database.commandUsed(event.getPlayer().getName(),
-			// event.getMessage().toString());
-
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -128,14 +103,9 @@ class PlayerListener implements Listener {
 		//if (PurchasePermissions.permissions.containsKey(pName)) {
 			List<String> nodes = plugin.config.getPermissionNode(permissionName);
 			
-			
-			// log.info("Player addPermission 3");
+
 			if (nodes != null) {
-				// log.info("Player addPermission 4");
-	
-				// Player player = plugin.getServer().getPlayer(pName);
-				// log.info("Player addPermission 5");
-				// if (player != null){
+
 				log.info(PurchasePermissions.chatPrefix + " Adding " + nodes + " to " + pName + ".");
 				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
 	
@@ -145,8 +115,6 @@ class PlayerListener implements Listener {
 					attachment.setPermission(nodeName, true);
 				}
 	
-				// log.info("Player addPermission 7");
-				// }
 			}
 		//}
 	}

@@ -50,3 +50,4 @@ enUS:
     stUnlimited: "Unlimited"
     stCannotLoadPermissionsFile: "&7Failed to load the permissions.yml file, Please inform an administrator."
     stCannotConnectToDB: "Failed to connect to the database, Please inform an administrator"
+    stCannotUsePermInWorld: "§7You cannot use §f%s §7in that world."
