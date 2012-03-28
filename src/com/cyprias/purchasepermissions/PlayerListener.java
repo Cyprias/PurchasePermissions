@@ -106,15 +106,17 @@ class PlayerListener implements Listener {
 
 			if (nodes != null) {
 
-				log.info(PurchasePermissions.chatPrefix + " Adding " + nodes + " to " + pName + ".");
+				
 				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
 	
 				// log.info("Player addPermission 6");
 	
 				for (String nodeName : nodes) {
+					log.info(PurchasePermissions.chatPrefix + " Adding " + nodeName + " to " + pName + ".");
 					attachment.setPermission(nodeName, true);
 				}
-	
+				
+				
 			}
 		//}
 	}

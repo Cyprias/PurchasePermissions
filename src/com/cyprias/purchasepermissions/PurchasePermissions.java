@@ -112,7 +112,7 @@ public class PurchasePermissions extends JavaPlugin {
 		}
 		PermissionAttachment attachment = player.addAttachment(this);
 
-		permissions.put(player.getName(), attachment);
+		permissions.put(player.getName().toLowerCase(), attachment);
 
 		try {
 			database.retrieveActivePermissions(player);
@@ -124,22 +124,22 @@ public class PurchasePermissions extends JavaPlugin {
 
 	protected void unregisterPlayer(Player player) {
 		// log.info(chatPrefix + "Unegistering " + player.getName());
-		if (permissions.containsKey(player.getName())) {
+		if (permissions.containsKey(player.getName().toLowerCase())) {
 
 			try {
-				database.removeActivePermissions(player.getName());
+				database.removeActivePermissions(player.getName().toLowerCase());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			try {
-				player.removeAttachment(permissions.get(player.getName()));
+				player.removeAttachment(permissions.get(player.getName().toLowerCase()));
 			} catch (IllegalArgumentException ex) {
 				log.info("Unregistering " + player.getName() + ": player did not have attachment");
 			}
 
-			permissions.remove(player.getName());
+			permissions.remove(player.getName().toLowerCase());
 		}
 	}
 
@@ -150,7 +150,7 @@ public class PurchasePermissions extends JavaPlugin {
 	}
 
 	public void resetPlayerPermissions(Player player) {
-		String playerName = player.getName();
+		String playerName = player.getName().toLowerCase();
 		if (permissions.containsKey(playerName)) {
 
 			try {
@@ -426,7 +426,7 @@ public class PurchasePermissions extends JavaPlugin {
 				// PB.unloadPlayerPermissions(player.getName());
 				try {
 
-					database.removeActivePermissions(player.getName());
+					database.removeActivePermissions(player.getName().toLowerCase());
 					database.retrieveActivePermissions(player);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -542,7 +542,7 @@ public class PurchasePermissions extends JavaPlugin {
 					info = this.config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						if (database.isPermissionActive(player.getName(), args[1].toString())) {
+						if (database.isPermissionActive(player.getName().toLowerCase(), args[1].toString())) {
 
 							sender.sendMessage(chatPrefix + F("stAlreadyOwnPerm", args[1].toString()));
 							return true;
@@ -558,7 +558,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 						if (getBalance(sender.getName()) > info.price) {
 
-							String target = player.getName();
+							String target = player.getName().toLowerCase();
 
 							if (args.length == 3) {
 								target = args[2];
@@ -566,7 +566,7 @@ public class PurchasePermissions extends JavaPlugin {
 								log.info(F("stUserBoughtPerm", sender.getName(), info.name, target));
 							}
 
-							database.removeActivePermissions(sender.getName());
+							database.removeActivePermissions(sender.getName().toLowerCase());
 							if (database.addPlayer(target, info)) {
 								econ.withdrawPlayer(sender.getName(), info.price);
 

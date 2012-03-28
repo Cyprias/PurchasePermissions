@@ -127,7 +127,7 @@ public class Localization {
 		String value;
 		for (String key : locales.getConfigurationSection(Config.locale).getKeys(false)) {
 			value = locales.getConfigurationSection(Config.locale).getString(key);
-			L.put(key, value.replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+			L.put(key, value.replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));//§
 
 			//log.info("loadLocales " + key + " " + L.get(key));
 		}

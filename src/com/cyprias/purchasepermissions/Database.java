@@ -44,7 +44,7 @@ public class Database {
 	
 	public void retrieveActivePermissions(Player player) throws SQLException {
 
-		String playerName = player.getName();
+		String playerName = player.getName().toLowerCase();
 
 		String SQL = "SELECT * FROM `" + Config.DbTable + "` WHERE `player` = '" + playerName + "'";
 
@@ -203,7 +203,7 @@ public class Database {
 	public void commandUsed(Player player, String message) throws Exception {
 		// log.info("commandUsed: " + playerName + " " + message);
 
-		String playerName = player.getName();
+		String playerName = player.getName().toLowerCase();
 		
 		//if Config.canUsePermissionInWorld(event.getPlayer(), )
 		
@@ -218,7 +218,7 @@ public class Database {
 		
 		//pInfo.
 		
-		if (isPermissionActive(player.getName(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
+		if (isPermissionActive(player.getName().toLowerCase(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
 			
 			if (! plugin.playerHasPermissions(player, pInfo.node)) {//Make sure other permission plugins don't either before notifying user.
 				player.sendMessage(chatPrefix + F("stCannotUsePermInWorld", pInfo.name));
