@@ -55,12 +55,14 @@ public class Database {
 		ResultSet result = statement.executeQuery();
 
 		while (result.next()) {
-			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
+			//if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
+			//log.info("retrieveActivePermissions 1: " + playerName +" " + result.getString(col_permission));
 				if (plugin.config.canUsePermissionInWorld(player, result.getString(col_permission)) == true) {
+				//	log.info("retrieveActivePermissions 2: " + playerName +" " +result.getString(col_permission));
 					plugin.playerListener.addPermission(result.getString(col_player), result.getString(col_permission));
 				}
 				
-			}
+			//}
 		}
 
 		statement.close();
@@ -89,9 +91,9 @@ public class Database {
 
 		// log.info("retrieveActivePermissions: 2");
 		while (result.next()) {
-			if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
+			//if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
 				plugin.playerListener.removePermission(result.getString(col_player), result.getString(col_permission));
-			}
+			//}
 		}
 
 		statement.close();

@@ -60,6 +60,7 @@ public class PurchasePermissions extends JavaPlugin {
 		name = this.getDescription().getName();
 		version = this.getDescription().getVersion();
 
+		//this.getServer().getPluginManager().callEvent(PlayerKickEvent)
 		
 		// Load config and permissions
 		config = new Config(this);
@@ -542,11 +543,7 @@ public class PurchasePermissions extends JavaPlugin {
 					info = this.config.getPermissionInfo(args[1]);
 					if (info != null) {
 
-						if (database.isPermissionActive(player.getName().toLowerCase(), args[1].toString())) {
 
-							sender.sendMessage(chatPrefix + F("stAlreadyOwnPerm", args[1].toString()));
-							return true;
-						}
 
 						// if ((info.requirebuypermission == true ||
 						// config.useBuyPermission == true) &&
@@ -560,13 +557,23 @@ public class PurchasePermissions extends JavaPlugin {
 
 							String target = player.getName().toLowerCase();
 
-							if (args.length == 3) {
-								target = args[2];
+							if (args.length == 3 && args[2].length()>0) {
+								target = args[2].toLowerCase();
 
-								log.info(F("stUserBoughtPerm", sender.getName(), info.name, target));
+								if (sender.getName().equalsIgnoreCase(target)){
+									log.info(F("stUserBoughtPerm", sender.getName(), info.name, player.getDisplayName()));
+								}else{
+									log.info(F("stUserBoughtPerm", sender.getName(), info.name, target));
+								}
 							}
 
-							database.removeActivePermissions(sender.getName().toLowerCase());
+							if (database.isPermissionActive(target, args[1].toString())) {
+								sender.sendMessage(chatPrefix + F("stAlreadyOwnPerm", target, args[1].toString()));
+								return true;
+							}
+							
+							database.removeActivePermissions(target);
+							
 							if (database.addPlayer(target, info)) {
 								econ.withdrawPlayer(sender.getName(), info.price);
 
@@ -588,11 +595,27 @@ public class PurchasePermissions extends JavaPlugin {
 
 								sender.sendMessage(F("stFailedToBuyPerm", info.name));
 							}
-							database.retrieveActivePermissions(player);
-							// pb.loadPlayerPermissions(sender.getName());
-
-							// econ.withdrawPlayer(sender.getName(), info.price
-
+							
+		
+							//database.retrieveActivePermissions(player);
+							
+							if (player.getName().equals(target)){
+								database.retrieveActivePermissions(player);
+							}else{
+								for (Player p : getServer().getOnlinePlayers()) {
+									if (p.getName().equalsIgnoreCase(target)){
+										database.retrieveActivePermissions(p);
+										//p.sendMessage();
+										
+										p.sendMessage(F("stSomeoneBoughtYouPerm", player.getDisplayName(), info.name));
+										
+										return true;
+									}
+								}
+							}
+							
+							sender.sendMessage(F("stPlayerWillReceivePermission", target, info.name));
+							
 						} else {
 
 							sender.sendMessage(F("stNotEnoughFunds", info.name));
