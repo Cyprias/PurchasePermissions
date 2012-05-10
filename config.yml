@@ -1,4 +1,3 @@
-permissions:
 mysql:
     table: pp_players
     port: 3306

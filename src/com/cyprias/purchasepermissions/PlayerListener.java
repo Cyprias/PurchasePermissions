@@ -111,12 +111,12 @@ class PlayerListener implements Listener {
 				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
 	
 				// log.info("Player addPermission 6");
-	
-				for (String nodeName : nodes) {
-					log.info(PurchasePermissions.chatPrefix + " Adding " + nodeName + " to " + pName + ".");
-					attachment.setPermission(nodeName, true);
+				if (attachment != null){
+					for (String nodeName : nodes) {
+						plugin.info(" Adding " + nodeName + " to " + pName + ".");
+						attachment.setPermission(nodeName, true);
+					}
 				}
-				
 				
 			}
 		//}
@@ -129,14 +129,15 @@ class PlayerListener implements Listener {
 			if (nodes != null) {
 
 				
-				log.info(PurchasePermissions.chatPrefix + " Removing " + nodes + " to " + pName + ".");
+			//	plugin.info(" Removing " + nodes + " to " + pName + ".");
 				PermissionAttachment attachment = PurchasePermissions.permissions.get(pName);
 				// log.info("Player addPermission 6");
 	
-				for (String nodeName : nodes) {
-					attachment.unsetPermission(nodeName);
+				if (attachment != null){
+					for (String nodeName : nodes) {
+						attachment.unsetPermission(nodeName);
+					}
 				}
-
 			}
 		//}
 	}

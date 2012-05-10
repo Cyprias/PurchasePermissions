@@ -51,24 +51,24 @@ public class PurchasePermissions extends JavaPlugin {
 	public static Economy econ = null;
 
 	HashMap<String, PermissionAttachment> activePermissions;
-
+	private PurchasePermissions plugin;
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 
-	
 	public void onEnable() {
+		plugin = this;
 		server = getServer();
 		name = this.getDescription().getName();
 		version = this.getDescription().getVersion();
 
-		//this.getServer().getPluginManager().callEvent(PlayerKickEvent)
-		
+		// this.getServer().getPluginManager().callEvent(PlayerKickEvent)
+
 		// Load config and permissions
 		config = new Config(this);
 		database = new Database(this);
 		playerListener = new PlayerListener(this);
 		localization = new Localization(this);
-		
-		if (database.testDBConnection() == false){
+
+		if (database.testDBConnection() == false) {
 			log.severe("[PP] Failed to connect to MySQL database, shutting down...");
 			this.getPluginLoader().disablePlugin(this);
 			return;
@@ -102,13 +102,13 @@ public class PurchasePermissions extends JavaPlugin {
 			registerPlayer(p);
 		}
 
-		log.info(F("stPluginEnabled", name, version));
+		info(F("stPluginEnabled", name, version));
 	}
 
 	protected void registerPlayer(Player player) {
 		// log.info(chatPrefix + "Registering " + player.getName());
 		if (permissions.containsKey(player.getName())) {
-			log.info(chatPrefix + "Registering " + player.getName() + ": was already registered");
+			info(chatPrefix + "Registering " + player.getName() + ": was already registered");
 			unregisterPlayer(player);
 		}
 		PermissionAttachment attachment = player.addAttachment(this);
@@ -137,7 +137,7 @@ public class PurchasePermissions extends JavaPlugin {
 			try {
 				player.removeAttachment(permissions.get(player.getName().toLowerCase()));
 			} catch (IllegalArgumentException ex) {
-				log.info("Unregistering " + player.getName() + ": player did not have attachment");
+				info("Unregistering " + player.getName() + ": player did not have attachment");
 			}
 
 			permissions.remove(player.getName().toLowerCase());
@@ -170,7 +170,7 @@ public class PurchasePermissions extends JavaPlugin {
 		for (Player p : getServer().getOnlinePlayers()) {
 			unregisterPlayer(p);
 		}
-		log.info(chatPrefix + name + " v" + version + " is disabled.");
+		info(chatPrefix + name + " v" + version + " is disabled.");
 
 	}
 
@@ -229,9 +229,11 @@ public class PurchasePermissions extends JavaPlugin {
 			return true;
 		}
 
-		//log.info("canBuyPermission  info.name: " + info.name);
-		//log.info("canBuyPermission  config.useBuyPermission: " + config.useBuyPermission);
-		//log.info("canBuyPermission  info.requirebuypermission: " + info.requirebuypermission);
+		// log.info("canBuyPermission  info.name: " + info.name);
+		// log.info("canBuyPermission  config.useBuyPermission: " +
+		// config.useBuyPermission);
+		// log.info("canBuyPermission  info.requirebuypermission: " +
+		// info.requirebuypermission);
 
 		if (config.useBuyPermission == false && info.requirebuypermission == false) {
 			// no buy permission required to buy this permission.
@@ -262,7 +264,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 		final String message = getFinalArg(args, 0);
 
-		log.info(chatPrefix + senderName + " " + cmd.getName() + ": " + message.toString());
+		info(chatPrefix + senderName + " " + cmd.getName() + ": " + message.toString());
 
 		if (cmd.getName().equalsIgnoreCase("pp")) {
 			if (args.length == 0) {
@@ -288,12 +290,11 @@ public class PurchasePermissions extends JavaPlugin {
 
 				Set<String> permissions = config.getPermissions();
 
-				if (permissions == null){
+				if (permissions == null) {
 					sender.sendMessage(chatPrefix + L("stCannotLoadPermissionsFile"));
 					return true;
 				}
-				
-				
+
 				sender.sendMessage(chatPrefix + L("stAvailablePermissions"));
 
 				Config.permissionInfo info;
@@ -352,11 +353,10 @@ public class PurchasePermissions extends JavaPlugin {
 
 							if (info.requirebuypermission == true && canBuyPermission(sender, info)) {
 								sender.sendMessage("  " + ChatColor.GOLD + "* " + node + msgColour + uses + " " + price + duration);
-							}else{
+							} else {
 								sender.sendMessage("  " + node + msgColour + uses + " " + price + duration);
 							}
-							
-							
+
 						}
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
@@ -379,7 +379,6 @@ public class PurchasePermissions extends JavaPlugin {
 					if (info != null) {
 
 						sender.sendMessage(chatPrefix + F("stPermissionInfo", info.name));
-						
 
 						if (info.requirebuypermission == true)
 							sender.sendMessage(F("stPermissionRequiresBuyPerm", info.name));
@@ -423,7 +422,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 			} else if (args[0].equalsIgnoreCase("load")) {
 
-				log.info("Load: " + player.getName());
+				info("Load: " + player.getName());
 				// PB.unloadPlayerPermissions(player.getName());
 				try {
 
@@ -444,10 +443,7 @@ public class PurchasePermissions extends JavaPlugin {
 
 				if (sender.isOp()) {
 					config.reloadOurConfig();
-
-					
-					
-					
+					localization.reloadLocalesFile();
 					
 					sender.sendMessage(chatPrefix + " plugin reloaded.");
 					return true;
@@ -462,7 +458,7 @@ public class PurchasePermissions extends JavaPlugin {
 					return true;
 				}
 
-				log.info(chatPrefix + " create 1");
+				info(chatPrefix + " create 1");
 
 				if (config.createPermission(player, args[1])) {
 					sender.sendMessage(F("stPermCreated", args[1], args[1]));
@@ -530,7 +526,9 @@ public class PurchasePermissions extends JavaPlugin {
 					sender.sendMessage(chatPrefix + F("stPermRemoved", args[1].toString()));
 					return true;
 				}
-
+			} else if (args[0].equalsIgnoreCase("version")) {
+				sender.sendMessage("Version: " + version);
+				return true;
 			} else if (args[0].equalsIgnoreCase("buy")) {
 				if (args.length == 1) {
 
@@ -542,8 +540,6 @@ public class PurchasePermissions extends JavaPlugin {
 				try {
 					info = this.config.getPermissionInfo(args[1]);
 					if (info != null) {
-
-
 
 						// if ((info.requirebuypermission == true ||
 						// config.useBuyPermission == true) &&
@@ -557,13 +553,13 @@ public class PurchasePermissions extends JavaPlugin {
 
 							String target = player.getName().toLowerCase();
 
-							if (args.length == 3 && args[2].length()>0) {
+							if (args.length == 3 && args[2].length() > 0) {
 								target = args[2].toLowerCase();
 
-								if (sender.getName().equalsIgnoreCase(target)){
-									log.info(F("stUserBoughtPerm", sender.getName(), info.name, player.getDisplayName()));
-								}else{
-									log.info(F("stUserBoughtPerm", sender.getName(), info.name, target));
+								if (sender.getName().equalsIgnoreCase(target)) {
+									info(F("stUserBoughtPerm", sender.getName(), info.name, player.getDisplayName()));
+								} else {
+									info(F("stUserBoughtPerm", sender.getName(), info.name, target));
 								}
 							}
 
@@ -571,9 +567,9 @@ public class PurchasePermissions extends JavaPlugin {
 								sender.sendMessage(chatPrefix + F("stAlreadyOwnPerm", target, args[1].toString()));
 								return true;
 							}
-							
+
 							database.removeActivePermissions(target);
-							
+
 							if (database.addPlayer(target, info)) {
 								econ.withdrawPlayer(sender.getName(), info.price);
 
@@ -595,27 +591,26 @@ public class PurchasePermissions extends JavaPlugin {
 
 								sender.sendMessage(F("stFailedToBuyPerm", info.name));
 							}
-							
-		
-							//database.retrieveActivePermissions(player);
-							
-							if (player.getName().equals(target)){
+
+							// database.retrieveActivePermissions(player);
+
+							if (player.getName().equals(target)) {
 								database.retrieveActivePermissions(player);
-							}else{
+							} else {
 								for (Player p : getServer().getOnlinePlayers()) {
-									if (p.getName().equalsIgnoreCase(target)){
+									if (p.getName().equalsIgnoreCase(target)) {
 										database.retrieveActivePermissions(p);
-										//p.sendMessage();
-										
+										// p.sendMessage();
+
 										p.sendMessage(F("stSomeoneBoughtYouPerm", player.getDisplayName(), info.name));
-										
+
 										return true;
 									}
 								}
 							}
-							
+
 							sender.sendMessage(F("stPlayerWillReceivePermission", target, info.name));
-							
+
 						} else {
 
 							sender.sendMessage(F("stNotEnoughFunds", info.name));
@@ -659,18 +654,23 @@ public class PurchasePermissions extends JavaPlugin {
 	}
 
 	public String L(String key) {
-		return localization.L.get(key);
+		if (localization.L.containsKey(key))
+			return localization.L.get(key);
+
+		return key;
 	}
 
 	public String F(String key, Object... args) {
-		String value = localization.L.get(key).toString();
+		String value;
+		
+		if (! localization.L.containsKey(key))
+			return key;
+		
+		value = localization.L.get(key).toString();
 		try {
 			if (value != null || args != null)
 				value = String.format(value, args); // arg.toString()
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) {e.printStackTrace();}
 		return value;
 	}
 
@@ -748,5 +748,9 @@ public class PurchasePermissions extends JavaPlugin {
 			return minutes + "m" + seconds + "s";
 		else
 			return seconds + "s";
+	}
+
+	public void info(String msg) {
+		plugin.getServer().getConsoleSender().sendMessage(chatPrefix + msg);
 	}
 }

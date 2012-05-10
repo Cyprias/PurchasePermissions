@@ -18,8 +18,7 @@ import org.bukkit.plugin.Plugin;
 public class Database {
 
 	private static String chatPrefix = "§f[§aPP§f] ";
-	
-	
+
 	static int col_id = 1;
 	static int col_player = 2;
 	static int col_permission = 3;
@@ -27,21 +26,21 @@ public class Database {
 	static int col_expires = 5;
 
 	Logger log = Logger.getLogger("Minecraft");
-	
+
 	private PurchasePermissions plugin;
 
-	
 	public Database(PurchasePermissions plugin) {
 		this.plugin = plugin;
 	}
-		
+
 	private String L(String key) {
 		return plugin.L(key);
 	}
+
 	public String F(String key, Object... args) {
 		return plugin.F(key, args);
 	}
-	
+
 	public void retrieveActivePermissions(Player player) throws SQLException {
 
 		String playerName = player.getName().toLowerCase();
@@ -55,30 +54,34 @@ public class Database {
 		ResultSet result = statement.executeQuery();
 
 		while (result.next()) {
-			//if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
-			//log.info("retrieveActivePermissions 1: " + playerName +" " + result.getString(col_permission));
-				if (plugin.config.canUsePermissionInWorld(player, result.getString(col_permission)) == true) {
-				//	log.info("retrieveActivePermissions 2: " + playerName +" " +result.getString(col_permission));
-					plugin.playerListener.addPermission(result.getString(col_player), result.getString(col_permission));
-				}
-				
-			//}
+			// if
+			// (PurchasePermissions.permissions.containsKey(result.getString(col_player)))
+			// {
+			// log.info("retrieveActivePermissions 1: " + playerName +" " +
+			// result.getString(col_permission));
+			if (plugin.config.canUsePermissionInWorld(player, result.getString(col_permission)) == true) {
+				// log.info("retrieveActivePermissions 2: " + playerName +" "
+				// +result.getString(col_permission));
+				plugin.playerListener.addPermission(result.getString(col_player), result.getString(col_permission));
+			}
+
+			// }
 		}
 
 		statement.close();
 		con.close();
 	}
 
-	public boolean testDBConnection(){
+	public boolean testDBConnection() {
 		try {
 			Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
 			con.close();
 			return true;
-		} catch (SQLException e) {}
+		} catch (SQLException e) {
+		}
 		return false;
 	}
-	
-	
+
 	public void removeActivePermissions(String playerName) throws SQLException {
 
 		String SQL = "SELECT * FROM `" + Config.DbTable + "` WHERE `player` = '" + playerName + "'";
@@ -91,9 +94,11 @@ public class Database {
 
 		// log.info("retrieveActivePermissions: 2");
 		while (result.next()) {
-			//if (PurchasePermissions.permissions.containsKey(result.getString(col_player))) {
-				plugin.playerListener.removePermission(result.getString(col_player), result.getString(col_permission));
-			//}
+			// if
+			// (PurchasePermissions.permissions.containsKey(result.getString(col_player)))
+			// {
+			plugin.playerListener.removePermission(result.getString(col_player), result.getString(col_permission));
+			// }
 		}
 
 		statement.close();
@@ -157,7 +162,7 @@ public class Database {
 				pMsg = PurchasePermissions.chatPrefix + i + F("stActivePermission", result.getString(col_permission));
 
 				if (result.getInt(col_remainingUses) > 0) {
-					pMsg = pMsg + F("stActiveRemainingUses", result.getString(col_remainingUses) );
+					pMsg = pMsg + F("stActiveRemainingUses", result.getString(col_remainingUses));
 				}
 
 				if (result.getInt(col_expires) > 0) {
@@ -165,18 +170,18 @@ public class Database {
 					long expires = result.getLong(col_expires);
 					long remaining = expires - currentTime;
 
-					//long hours = remaining / 3600;
-					//long remainder = remaining % 3600, minutes = remainder / 60, seconds = remainder % 60;
+					// long hours = remaining / 3600;
+					// long remainder = remaining % 3600, minutes = remainder /
+					// 60, seconds = remainder % 60;
 
 					// String disHour = (hours < 10 ? "0" : "") + hours,
 					// disMinu = (minutes < 10 ? "0" : "") + minutes ,
 					// disSec = (seconds < 10 ? "0" : "") + seconds ;
 
-					//pMsg = pMsg + ChatColor.WHITE + ", Remaining time: " + ChatColor.GREEN + hours + "h " + minutes + "m " + seconds + "s";
+					// pMsg = pMsg + ChatColor.WHITE + ", Remaining time: " +
+					// ChatColor.GREEN + hours + "h " + minutes + "m " + seconds
+					// + "s";
 					pMsg = pMsg + F("stActiveRemainingTime", secondsToString(remaining));
-					
-					
-					
 
 				}
 
@@ -200,53 +205,63 @@ public class Database {
 
 	}
 
-	
-	
 	public void commandUsed(Player player, String message) throws Exception {
 		// log.info("commandUsed: " + playerName + " " + message);
 
 		String playerName = player.getName().toLowerCase();
-		
-		//if Config.canUsePermissionInWorld(event.getPlayer(), )
-		
+
+		// if Config.canUsePermissionInWorld(event.getPlayer(), )
+
 		Set<String> permissions = plugin.config.getPermissions();
-		
+
 		Config.permissionInfo pInfo = plugin.config.isValidCommand(message);
-			
+
 		if (pInfo == null)
 			return;
-		
-		
-		
-		//pInfo.
-		
-		if (isPermissionActive(player.getName().toLowerCase(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false){ //We don't permit user to use command in that world.
-			
-			if (! plugin.playerHasPermissions(player, pInfo.node)) {//Make sure other permission plugins don't either before notifying user.
+
+		// pInfo.
+
+		if (isPermissionActive(player.getName().toLowerCase(), pInfo.name) && plugin.config.canUsePermissionInWorld(player, pInfo.name) == false) { // We
+																																					// don't
+																																					// permit
+																																					// user
+																																					// to
+																																					// use
+																																					// command
+																																					// in
+																																					// that
+																																					// world.
+
+			if (!plugin.playerHasPermissions(player, pInfo.node)) {// Make sure
+																	// other
+																	// permission
+																	// plugins
+																	// don't
+																	// either
+																	// before
+																	// notifying
+																	// user.
 				player.sendMessage(chatPrefix + F("stCannotUsePermInWorld", pInfo.name));
 			}
 			return;
 		}
-			
-	
-		//log.info("commandUsed: " + pInfo.name);
-		
-		String SQL = "select * from " + Config.DbTable + 
-		" WHERE player = '" + playerName.toString() + "'" + 
-		" AND permission = '" + pInfo.name + "'";
-		
+
+		// log.info("commandUsed: " + pInfo.name);
+
+		String SQL = "select * from " + Config.DbTable + " WHERE player = '" + playerName.toString() + "'" + " AND permission = '" + pInfo.name + "'";
+
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection con = DriverManager.getConnection(Config.DbUrl, Config.DbUser, Config.DbPassword);
 		PreparedStatement statement = con.prepareStatement(SQL);
 		ResultSet result = statement.executeQuery();
-		
+
 		while (result.next()) {
 			// String name = result.getString(col_player);
 			int uses = result.getInt(col_remainingUses);
 			int pID = result.getInt(col_id);
-			
-			//log.info("commandUsed result: " + pID + " " + uses);
-			
+
+			// log.info("commandUsed result: " + pID + " " + uses);
+
 			if (uses == 1) {
 
 				if (removePermissionFromDB(pID)) {
@@ -254,12 +269,9 @@ public class Database {
 
 					plugin.playerListener.removePermission(playerName, pInfo.name);
 
-					
-					
-					
 					if (user != null) {
 						user.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", pInfo.name));
-						
+
 					}
 
 				}
@@ -272,15 +284,12 @@ public class Database {
 
 			}
 		}
-		
-		
+
 		result.close();
 		statement.close();
 		con.close();
-		
+
 	}
-
-
 
 	public boolean isPermissionActive(String playerName, String permissionName) throws Exception {
 		boolean found = false;
@@ -299,7 +308,7 @@ public class Database {
 			String name = result.getString(col_player);
 			String permission = result.getString(col_permission);
 
-			//log.info("isPermissionActive " + id);
+			// log.info("isPermissionActive " + id);
 			// return true
 			found = true;
 			break;
@@ -337,9 +346,8 @@ public class Database {
 					if (playerObj != null) {
 						playerObj.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", permission));
 					}
-					
-					
-					log.info(PurchasePermissions.chatPrefix + "Removing " + name + "'s " + permission + ".");
+
+					plugin.info("Removing " + name + "'s " + permission + ".");
 
 					// pb.unloadPlayerPermissions(name);
 					// removeActivePermissions(name);
@@ -406,7 +414,6 @@ public class Database {
 
 		result.last();
 		if (result.getRow() == 0) {
-			log.info(PurchasePermissions.chatPrefix + "Creating our MySQL table.");
 
 			String SQL = PurchasePermissions.resourceToString("Create-Table-mysql.sql");
 			SQL = String.format(SQL, Config.DbTable);

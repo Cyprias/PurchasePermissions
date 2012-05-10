@@ -22,14 +22,14 @@ public class Localization {
 	private PurchasePermissions plugin;
 
 	public HashMap<String, String> L = new HashMap<String, String>();
-	
+
 	public Localization(PurchasePermissions plugin) {
 		this.plugin = plugin;
 
 		loadLocales();
 	}
 
-	private void reloadLocalesFile() {
+	public void reloadLocalesFile() {
 		try {
 			localesFile = new File(plugin.getDataFolder(), "locales.yml");
 
@@ -37,11 +37,11 @@ public class Localization {
 			if (!localesFile.exists()) {
 				localesFile.getParentFile().mkdirs();
 				plugin.config.copy(plugin.getResource("locales.yml"), localesFile);
-				
+
 			}
 
 			locales.load(localesFile);
-
+			
 			loadDefaultLocales(false);
 
 		} catch (Exception e) {
@@ -50,7 +50,7 @@ public class Localization {
 	}
 
 	private void copyDefaultValue(String language, String key, String value) {
-		log.info("[PP] Loading default for " + language + "'s " + key + " value: " + value);
+		plugin.info("Loading default for " + language + "'s " + key + " value: " + value);
 		locales.getConfigurationSection(language).set(key, value);
 	}
 
@@ -72,7 +72,7 @@ public class Localization {
 				// log.info("loadDefaultLocales 2 " + language);
 
 				if (!locales.isSet(language)) {
-					log.info("[PP] Creating " + language + " section in our locales.");
+					plugin.info("Creating " + language + " section in our locales.");
 					locales.createSection(language);
 					saveLocales = true;
 				}
@@ -96,7 +96,7 @@ public class Localization {
 							saveLocales = true;
 						} else {
 							if (warnedUsers == false)
-								log.info("[PP] Language defaults have changed, use /pp locale to load them.");
+								plugin.info("Language defaults have changed, use /pp locale to load them.");
 							warnedUsers = true;
 						}
 					}
@@ -105,7 +105,7 @@ public class Localization {
 			}
 			if (saveLocales == true)
 				try {
-					log.info("[PP] Saving locales file.");
+					plugin.info("Saving locales file.");
 					locales.save(localesFile);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -115,21 +115,19 @@ public class Localization {
 
 	}
 
-	
-
 	public void loadLocales() {
 		if (localesFile == null) {
 			reloadLocalesFile();
 		}
 
-		//log.info("loadLocales locale: " + Config.locale);
+		// log.info("loadLocales locale: " + Config.locale);
 
 		String value;
 		for (String key : locales.getConfigurationSection(Config.locale).getKeys(false)) {
 			value = locales.getConfigurationSection(Config.locale).getString(key);
-			L.put(key, value.replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));//§
+			L.put(key, value.replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));// §
 
-			//log.info("loadLocales " + key + " " + L.get(key));
+			// log.info("loadLocales " + key + " " + L.get(key));
 		}
 	}
 
