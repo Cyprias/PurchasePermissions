@@ -113,7 +113,7 @@ class PlayerListener implements Listener {
 				// log.info("Player addPermission 6");
 				if (attachment != null){
 					for (String nodeName : nodes) {
-						plugin.info(" Adding " + nodeName + " to " + pName + ".");
+			//			plugin.info(" Adding " + nodeName + " to " + pName + ".");
 						attachment.setPermission(nodeName, true);
 					}
 				}

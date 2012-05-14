@@ -347,7 +347,7 @@ public class Database {
 						playerObj.sendMessage(PurchasePermissions.chatPrefix + F("stPermissionExpired", permission));
 					}
 
-					plugin.info("Removing " + name + "'s " + permission + ".");
+				//	plugin.info("Removing " + name + "'s " + permission + ".");
 
 					// pb.unloadPlayerPermissions(name);
 					// removeActivePermissions(name);
